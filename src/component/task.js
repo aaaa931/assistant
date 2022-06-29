@@ -1,6 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import { web_style } from "./btn";
-import { BtnDanger, BtnSuccess, Container, Input } from "./theme";
+import React, { useState } from "react";
+import { BtnDanger, BtnSuccess /*Container, Input*/ } from "./theme";
+import {
+    Box,
+    Button,
+    Input,
+    Grid,
+    Checkbox,
+    FormGroup,
+    FormControlLabel,
+} from "@mui/material";
+import { Bookmark, BookmarkBorder } from "@mui/icons-material";
 
 const Task = (props) => {
     const [edit, setEdit] = useState(false);
@@ -8,6 +17,13 @@ const Task = (props) => {
 
     const handleChange = (e) => {
         setNewName(e.target.value);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            console.log("e.keycode :>> ", e.keyCode);
+            handleSubmit(e);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -18,7 +34,7 @@ const Task = (props) => {
     };
 
     const editor = (
-        <form className="form row" onSubmit={handleSubmit}>
+        /*<form className="form row" onSubmit={handleSubmit}>
             <Container key={props.id}>
                 <Input
                     id={props.id}
@@ -26,6 +42,7 @@ const Task = (props) => {
                     placeholder={props.name}
                     value={newName}
                     onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                 />
                 <section className="col mb-3">
                     <BtnDanger
@@ -39,11 +56,40 @@ const Task = (props) => {
                     </BtnSuccess>
                 </section>
             </Container>
+        </form>*/
+        <form onSubmit={handleSubmit}>
+            {/* <Container key={props.id}> */}
+            <Grid container p={2}>
+                <Grid item xs={12} mb={3}>
+                    <Input
+                        placeholder={props.name}
+                        value={newName}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        fullWidth
+                    />
+                </Grid>
+                <Grid item xs={6} pr={2}>
+                    <Button
+                        className="h-300rem"
+                        onClick={() => setEdit(false)}
+                        fullWidth
+                    >
+                        取消
+                    </Button>
+                </Grid>
+                <Grid item xs={6} pl={2}>
+                    <Button className="h-300rem" fullWidth>
+                        確認
+                    </Button>
+                </Grid>
+            </Grid>
+            {/* </Container> */}
         </form>
     );
 
     const view = (
-        <section className="row">
+        /*<section className="row">
             <section key={props.id}>
                 <input
                     type="checkbox"
@@ -68,10 +114,46 @@ const Task = (props) => {
                     </BtnDanger>
                 </section>
             </section>
-        </section>
+        </section>*/
+        <Grid container p={2}>
+            <Grid item xs={12} mb={3}>
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                icon={<Bookmark />}
+                                checkedIcon={<BookmarkBorder />}
+                                defaultChecked={props.completed}
+                                onChange={() => props.toggleCompleted(props.id)}
+                            />
+                        }
+                        label={props.name}
+                    ></FormControlLabel>
+                </FormGroup>
+            </Grid>
+            <Grid item xs={6} pr={2}>
+                <Button
+                    className="h-300rem"
+                    onClick={() => setEdit(true)}
+                    fullWidth
+                >
+                    編輯
+                </Button>
+            </Grid>
+            <Grid item xs={6} pl={2}>
+                <Button
+                    className="h-300rem"
+                    onClick={() => props.deleteNote(props.id)}
+                    fullWidth
+                >
+                    刪除
+                </Button>
+            </Grid>
+        </Grid>
     );
 
-    return <li>{edit ? editor : view}</li>;
+    // return <li>{edit ? editor : view}</li>;
+    return <>{edit ? editor : view}</>;
 };
 
 export default Task;
