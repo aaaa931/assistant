@@ -9,7 +9,16 @@ import theme, {
     Section,
     Btn,
 } from "./component/theme";
-import { Box, Button, Container, Grid, Input, Stack } from "@mui/material";
+import {
+    Box,
+    Button,
+    Container,
+    Grid,
+    Input,
+    Stack,
+    Typography,
+    TextField,
+} from "@mui/material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux/es/exports";
 import {
@@ -51,9 +60,14 @@ const NoteInput = (props) => {
         </form>*/
         <form onSubmit={handelSubmit}>
             <Box p={2}>
-                <Label htmlFor="inputNote">輸入待辦事項：</Label>
-                <Input
-                    id="inputNote"
+                {/* <Label htmlFor="inputNote">輸入待辦事項：</Label> */}
+                {/* <Typography variant="h6" component="label" gutterBottom>
+                    輸入待辦事項：
+                </Typography> */}
+                <TextField
+                    // id="inputNote"
+                    variant="filled"
+                    label="輸入待辦事項："
                     value={name}
                     onChange={handleChange}
                     fullWidth
@@ -80,6 +94,7 @@ const FilterBtn = (props) => {
 
     return (
         <Button
+            className="h-300rem"
             variant="contained"
             fullWidth
             onClick={() => {
@@ -240,6 +255,7 @@ const Edit = (props) => {
                   id={note.id}
                   name={note.data}
                   completed={note.status == "completed" ? true : false}
+                  key={note.id}
                   toggleCompleted={toggleCompleted}
                   deleteNote={deleteNote}
                   editNote={editNote}

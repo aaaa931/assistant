@@ -8,6 +8,7 @@ import {
     Checkbox,
     FormGroup,
     FormControlLabel,
+    Typography,
 } from "@mui/material";
 import { Bookmark, BookmarkBorder } from "@mui/icons-material";
 
@@ -74,12 +75,19 @@ const Task = (props) => {
                         className="h-300rem"
                         onClick={() => setEdit(false)}
                         fullWidth
+                        variant="contained"
+                        color="danger"
                     >
                         取消
                     </Button>
                 </Grid>
                 <Grid item xs={6} pl={2}>
-                    <Button className="h-300rem" fullWidth>
+                    <Button
+                        className="h-300rem"
+                        fullWidth
+                        variant="contained"
+                        color="success"
+                    >
                         確認
                     </Button>
                 </Grid>
@@ -121,13 +129,27 @@ const Task = (props) => {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                icon={<Bookmark />}
-                                checkedIcon={<BookmarkBorder />}
+                                icon={
+                                    <Bookmark
+                                        color="success"
+                                        fontSize="large"
+                                    />
+                                }
+                                checkedIcon={
+                                    <BookmarkBorder
+                                        color="success"
+                                        fontSize="large"
+                                    />
+                                }
                                 defaultChecked={props.completed}
                                 onChange={() => props.toggleCompleted(props.id)}
                             />
                         }
-                        label={props.name}
+                        label={
+                            <Typography sx={{ color: "text.primary" }}>
+                                {props.name}
+                            </Typography>
+                        }
                     ></FormControlLabel>
                 </FormGroup>
             </Grid>
@@ -136,6 +158,8 @@ const Task = (props) => {
                     className="h-300rem"
                     onClick={() => setEdit(true)}
                     fullWidth
+                    variant="contained"
+                    color="success"
                 >
                     編輯
                 </Button>
@@ -145,6 +169,8 @@ const Task = (props) => {
                     className="h-300rem"
                     onClick={() => props.deleteNote(props.id)}
                     fullWidth
+                    variant="contained"
+                    color="danger"
                 >
                     刪除
                 </Button>

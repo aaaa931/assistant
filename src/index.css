@@ -166,3 +166,12 @@
 .vh-90 {
     height: 90vh;
 }
+
+.body {
+    margin-top: 10vh;
+}
+
+.style-link {
+    text-decoration: none;
+    color: #ccc;
+}
