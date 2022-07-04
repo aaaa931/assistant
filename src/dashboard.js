@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import theme, { Container, Btn } from "./component/theme";
+// import theme, { Container, Btn } from "./component/theme";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -11,6 +11,7 @@ import {
     Legend,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import { Container, Typography, Box, Divider } from "@mui/material";
 
 ChartJS.register(
     CategoryScale,
@@ -149,15 +150,38 @@ const Dashboard = (props) => {
     };
 
     const ChartArea = (props) => (
-        <section className="mb-5">
-            <h2 className="text-center">{props.title}</h2>
-            <hr />
+        // <section className="mb-5">
+        //     <h2 className="text-center">{props.title}</h2>
+        //     <hr />
+        //     {props.chart}
+        // </section>
+        <Box>
+            <Typography variant="h3" textAlign="center" mt={3}>
+                {props.title}
+            </Typography>
+            <Divider sx={{ marginY: 3 }} />
             {props.chart}
-        </section>
+        </Box>
     );
 
     return (
-        <Container className="container my-5">
+        // <Container className="container my-5">
+        //     <ChartArea
+        //         title="圓餅圖"
+        //         chart={<Pie options={pie_option} data={chart_data} />}
+        //     ></ChartArea>
+        //     <ChartArea
+        //         title="縱向長條圖"
+        //         chart={<Bar options={bar_option} data={chart_data} />}
+        //     ></ChartArea>
+        //     <ChartArea
+        //         title="橫向長條圖"
+        //         chart={
+        //             <Bar options={bar_horizontal_option} data={chart_data} />
+        //         }
+        //     ></ChartArea>
+        // </Container>
+        <Container>
             <ChartArea
                 title="圓餅圖"
                 chart={<Pie options={pie_option} data={chart_data} />}

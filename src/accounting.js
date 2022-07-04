@@ -1,8 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Input, Label, Btn, Text } from "./component/theme";
+// import { Container, Input, Label, Btn, Text } from "./component/theme";
 import ReactTable from "./component/table";
-import DataList, { InputN } from "./component/form";
-import { H2 } from "./component/theme";
+import DataList, { InputN, Submit, ErrorMsg, Title } from "./component/form";
+// import { H2 } from "./component/theme";
+import {
+    Box,
+    Button,
+    Container,
+    Stack,
+    Typography,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Menu,
+    Tooltip,
+    MenuItem,
+    Switch,
+    FormGroup,
+    FormControlLabel,
+    TextField,
+    Autocomplete,
+    CssBaseline,
+    Alert,
+} from "@mui/material";
 
 const Accounting = (props) => {
     const [id, setId] = useState("");
@@ -12,7 +32,8 @@ const Accounting = (props) => {
             ? JSON.parse(localStorage.getItem("itemData"))
             : [{ itemId: "", itemName: "" }];
     const [itemData, setItemData] = useState(rawItemData);
-    const refAlert = useRef("");
+    // const refAlert = useRef("");
+    const [alert, setAlert] = useState(false);
     const [msg, setMsg] = useState("");
     const [total, setTotal] = useState(0);
     // YYYY-MM-DD
@@ -53,38 +74,44 @@ const Accounting = (props) => {
         setTotal(priceAll);
     }, []);
 
-    const idList = itemData.map((item) => (
-        <option value={item.itemId} key={item.itemId}>
-            {item.itemName}
-        </option>
-    ));
+    // const idList = itemData.map((item) => (
+    //     <option value={item.itemId} key={item.itemId}>
+    //         {item.itemName}
+    //     </option>
+    // ));
+
+    const idList =
+        itemData[0].itemId != "暫無資料" ? itemData.map((item) => item.id) : [];
+
+    const alert_check = () => {
+        if (alert === true) {
+            setAlert(false);
+        }
+    };
 
     const handleId = (e) => {
-        if (refAlert.current.style.display == "block") {
-            refAlert.current.style.display = "none";
-        }
+        alert_check();
         setId(e.target.value);
     };
 
     const handlePrice = (e) => {
-        if (refAlert.current.style.display == "block") {
-            refAlert.current.style.display = "none";
-        }
+        alert_check();
         setPrice(e.target.value);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (id === "" || price === "") {
-            setMsg("編號或金額輸入不得為空");
-            refAlert.current.style.display = "block";
-            return;
-        }
+        // if (id === "" || price === "") {
+        //     setMsg("編號或金額輸入不得為空");
+        //     refAlert.current.style.display = "block";
+        //     return;
+        // }
 
         if (itemData.filter((item, i) => item.itemId == id).length < 1) {
             setMsg("請確認輸入的編號為已經登記在項目表上的編號");
-            refAlert.current.style.display = "block";
+            // refAlert.current.style.display = "block";
+            setAlert(true);
             return;
         }
 
@@ -110,49 +137,82 @@ const Accounting = (props) => {
     };
 
     return (
-        <Container className="container">
-            <form className="form row mb-5" onSubmit={handleSubmit}>
-                <H2>新增記帳</H2>
-                <DataList
-                    text="項目編碼"
-                    minLength="1"
-                    maxLength="4"
-                    id="accountingId"
-                    inputid="accountingInputId"
-                    option={idList}
-                    onChange={handleId}
-                ></DataList>
-                <InputN
-                    id="accountingPrice"
-                    text="項目金額"
-                    min="-100000"
-                    max="100000"
-                    onChange={handlePrice}
-                ></InputN>
-                <Container className="px-3">
-                    <Btn className="btn w-100 w-lg-50">新增</Btn>
-                </Container>
-                <Container className="px-3 pt-3">
-                    <section
-                        className="alert alert-danger display-none"
-                        id="alert"
-                        ref={refAlert}
-                    >
-                        {msg}
-                    </section>
-                </Container>
+        // <Container className="container">
+        //     <form className="form row mb-5" onSubmit={handleSubmit}>
+        //         <H2>新增記帳</H2>
+        //         <DataList
+        //             text="項目編碼"
+        //             minLength="1"
+        //             maxLength="4"
+        //             id="accountingId"
+        //             inputid="accountingInputId"
+        //             option={idList}
+        //             onChange={handleId}
+        //         ></DataList>
+        //         <InputN
+        //             id="accountingPrice"
+        //             text="項目金額"
+        //             min="-100000"
+        //             max="100000"
+        //             onChange={handlePrice}
+        //         ></InputN>
+        //         <Container className="px-3">
+        //             <Btn className="btn w-100 w-lg-50">新增</Btn>
+        //         </Container>
+        //         <Container className="px-3 pt-3">
+        //             <section
+        //                 className="alert alert-danger display-none"
+        //                 id="alert"
+        //                 ref={refAlert}
+        //             >
+        //                 {msg}
+        //             </section>
+        //         </Container>
+        //     </form>
+        //     <Container className="row">
+        //         <H2>{month + " 月記帳表"}</H2>
+        //         <ReactTable
+        //             data={accountingData}
+        //             col={JSON.parse(localStorage.getItem("accountingCol"))}
+        //         ></ReactTable>
+        //         <Container className="text-end mb-5">
+        //             <h2>總金額：{total}</h2>
+        //         </Container>
+        //     </Container>
+        // </Container>
+        <Box>
+            <form onSubmit={handleSubmit}>
+                <Title text="新增記帳" />
+                <Stack direction="row" spacing={2} mb={3}>
+                    <DataList
+                        text="項目編碼"
+                        options={idList}
+                        onChange={handleId}
+                        maxLength={8}
+                    ></DataList>
+                    <InputN
+                        text="項目金額"
+                        onChange={handlePrice}
+                        min={-100000}
+                        max={100000}
+                    ></InputN>
+                </Stack>
+                <Submit />
+                <ErrorMsg alert={alert} msg={msg} />
             </form>
-            <Container className="row">
-                <H2>{month + " 月記帳表"}</H2>
+            <Box>
+                <Title text={month + " 月記帳表"} />
                 <ReactTable
                     data={accountingData}
-                    col={JSON.parse(localStorage.getItem("accountingCol"))}
+                    col={JSON.parse(localStorage.getItem("itemCol"))}
                 ></ReactTable>
-                <Container className="text-end mb-5">
-                    <h2>總金額：{total}</h2>
-                </Container>
-            </Container>
-        </Container>
+                <Box mb={5}>
+                    <Typography variant="h3" textAlign={"right"}>
+                        總金額：{total}
+                    </Typography>
+                </Box>
+            </Box>
+        </Box>
     );
 };
 

@@ -1,5 +1,5 @@
 // import { ThemeProvider } from "@emotion/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
 import BtnSwitch from "./btn";
 import {
@@ -23,35 +23,12 @@ import {
     Tooltip,
     MenuItem,
     Switch,
+    FormGroup,
+    FormControlLabel,
+    CssBaseline,
 } from "@mui/material";
-// import { MenuIcon } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-
-const getTheme = (mode) => ({
-    palette: {
-        mode,
-        primary: {
-            ...(mode === "light" ? { main: "#e8e8e8" } : { main: "#1f2022" }),
-        },
-        success: {
-            ...(mode === "light" ? { main: "#2cce82" } : { main: "#196354" }),
-        },
-        danger: {
-            ...(mode === "light" ? { main: "#fa8a93" } : { main: "#dc3545" }),
-        },
-        text: {
-            ...(mode === "light"
-                ? { primary: "#828282" }
-                : { primary: "#ccc" }),
-        },
-    },
-    components: {
-        MuiButtonBase: {},
-    },
-});
-
-const theme = createTheme(getTheme("dark"));
 
 /*const NavBrand = () => (
     <section className="navbar-brand ms-lg-5 ms-3">
@@ -91,8 +68,19 @@ const linkStyle = {
 const ModeSwitch = styled(Switch)(({ theme }) => ({
     // light mode: "#ffc107"
     // dark mode: "#094f86"
-    // color
     "& .MuiSwitch-switchBase.Mui-checked": {
+        color: "#094f86",
+        "&:hover": {
+            backgroundColor: alpha(
+                "#094f86",
+                theme.palette.action.hoverOpacity
+            ),
+        },
+    },
+    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+        backgroundColor: "#094f86",
+    },
+    "& .MuiSwitch-switchBase": {
         color: "#ffc107",
         "&:hover": {
             backgroundColor: alpha(
@@ -101,24 +89,23 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
             ),
         },
     },
-    "& .MuiSwitch-thumb": {
-        backgroundColor: "#094f86",
-    },
-    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+    "& .MuiSwitch-switchBase + .MuiSwitch-track": {
         backgroundColor: "#ffc107",
     },
 }));
 
 const NavList = (props) => {
+    const menuItemStyle = {
+        width: "50vw",
+        justifyContent: "center",
+    };
+
     const lists = Object.entries(webList).map(([webName, webUrl]) => (
         <MenuItem
             key={webName}
             onClick={props.onClick}
             divider={true}
-            sx={{
-                width: "40vw",
-                justifyContent: "center",
-            }}
+            sx={menuItemStyle}
         >
             <Typography
                 textAlign="center"
@@ -131,6 +118,20 @@ const NavList = (props) => {
             </Typography>
         </MenuItem>
     ));
+
+    lists.push(
+        <MenuItem
+            key={"darkmode"}
+            onClick={props.onClick}
+            divider={true}
+            sx={menuItemStyle}
+        >
+            <Typography textAlign="center" variant="h6" sx={linkStyle}>
+                深色模式
+            </Typography>
+            <ModeSwitch onChange={props.styleChange} checked={props.checked} />
+        </MenuItem>
+    );
 
     return lists;
 };
@@ -149,7 +150,7 @@ const NavBrand = () => (
     </Stack>
 );
 
-const NavMenu = () => {
+const NavMenu = (props) => {
     const [nav, setNav] = useState(null);
 
     const handleOpen = (e) => {
@@ -183,7 +184,11 @@ const NavMenu = () => {
                 open={Boolean(nav)}
                 onClose={handleClose}
             >
-                <NavList onClick={handleClose} />
+                <NavList
+                    onClick={handleClose}
+                    styleChange={props.styleChange}
+                    checked={props.checked}
+                />
             </Menu>
         </Stack>
     );
@@ -192,11 +197,6 @@ const NavMenu = () => {
 const NavMenuList = (props) => {
     const lists = Object.entries(webList).map(([webName, webUrl]) => (
         <Button key={webName} onClick={props.onClick}>
-            {/* <Link to={webUrl}>
-                <Typography textAlign="center" variant="h6">
-                    {webName}
-                </Typography>
-            </Link> */}
             <Typography
                 textAlign="center"
                 variant="h6"
@@ -211,8 +211,14 @@ const NavMenuList = (props) => {
 
     lists.push(
         <Stack direction="row" alignItems="center" key={"darkmode"} ml={3}>
-            <Typography variant="h6">深色模式</Typography>
-            <ModeSwitch />
+            <Typography variant="h6" sx={linkStyle}>
+                深色模式
+            </Typography>
+            <ModeSwitch
+                id="style_switch"
+                onChange={props.styleChange}
+                checked={props.checked}
+            />
         </Stack>
     );
 
@@ -247,10 +253,57 @@ const NavMenuList = (props) => {
 export default function Nav(props) {
     const [style, setStyle] = useState(localStorage.getItem("webStyle"));
 
-    const styleChange = (style) => {
-        setStyle(style);
-        localStorage.setItem("webStyle", style);
+    const styleChange = () => {
+        // console.log("style :>> ", style);
+        // setStyle(style);
+        // localStorage.setItem("webStyle", style);
+        const themeBg = document.querySelectorAll(".theme-bg");
+
+        if (style === "light") {
+            localStorage.setItem("webStyle", "dark");
+            themeFn(themeBg, "theme-bg-dark", "theme-bg-light");
+        } else {
+            localStorage.setItem("webStyle", "light");
+            themeFn(themeBg, "theme-bg-light", "theme-bg-dark");
+        }
+
+        setStyle(localStorage.getItem("webStyle"));
     };
+
+    const themeFn = (element, style1, style2) => {
+        for (let i = 0; i < element.length; i++) {
+            element[i].classList.add(style1);
+            element[i].classList.remove(style2);
+        }
+    };
+
+    const getTheme = (mode) => ({
+        palette: {
+            mode,
+            primary: {
+                ...(mode === "light"
+                    ? { main: "#e8e8e8" }
+                    : { main: "#1f2022" }),
+            },
+            success: {
+                ...(mode === "light"
+                    ? { main: "#2cce82" }
+                    : { main: "#196354" }),
+            },
+            danger: {
+                ...(mode === "light"
+                    ? { light: "#fa8a93", main: "#fa8a93" }
+                    : { light: "#fa8a93", main: "#dc3545" }),
+            },
+            text: {
+                ...(mode === "light"
+                    ? { primary: "#828282" }
+                    : { primary: "#ccc" }),
+            },
+        },
+    });
+
+    const theme = createTheme(getTheme(style));
 
     return (
         /*<ThemeProvider theme={theme[style]}>
@@ -264,17 +317,26 @@ export default function Nav(props) {
             <Outlet />
         </ThemeProvider>*/
         <ThemeProvider theme={theme}>
+            <CssBaseline />
             <AppBar>
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <NavBrand />
-                        <NavMenu />
-                        <NavMenuList />
+                        <NavMenu
+                            styleChange={styleChange}
+                            checked={style === "dark" && true}
+                        />
+                        <NavMenuList
+                            styleChange={styleChange}
+                            checked={style === "dark" && true}
+                        />
                     </Toolbar>
                 </Container>
             </AppBar>
             <div className="body"></div>
-            <Outlet />
+            <Container>
+                <Outlet />
+            </Container>
         </ThemeProvider>
     );
 }

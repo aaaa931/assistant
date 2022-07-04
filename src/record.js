@@ -1,6 +1,8 @@
 import React from "react";
-import { Container, H2 } from "./component/theme";
+// import { Container, H2 } from "./component/theme";
+import { Title } from "./component/form";
 import ReactTable from "./component/table";
+import { Box } from "@mui/material";
 
 const Record = (props) => {
     let rawAccountingData;
@@ -12,15 +14,22 @@ const Record = (props) => {
     }
 
     return (
-        <Container className="container">
-            <Container className="row">
-                <H2>過往紀錄</H2>
-                <ReactTable
-                    data={rawAccountingData}
-                    col={JSON.parse(localStorage.getItem("accountingCol"))}
-                ></ReactTable>
-            </Container>
-        </Container>
+        // <Container className="container">
+        //     <Container className="row">
+        //         <H2>過往紀錄</H2>
+        //         <ReactTable
+        //             data={rawAccountingData}
+        //             col={JSON.parse(localStorage.getItem("accountingCol"))}
+        //         ></ReactTable>
+        //     </Container>
+        // </Container>
+        <Box>
+            <Title text="過往紀錄" />
+            <ReactTable
+                data={rawAccountingData}
+                col={JSON.parse(localStorage.getItem("accountingCol"))}
+            ></ReactTable>
+        </Box>
     );
 };
 
