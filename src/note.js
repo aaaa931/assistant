@@ -154,12 +154,6 @@ const Edit = (props) => {
         web_style();
     }, [filter]);
 
-    useEffect(() => {
-        //fetchData();
-        dispatch(fetchNote(filter));
-        web_style();
-    }, []);
-
     // init
     /*if (!note) {
         const initNote = [

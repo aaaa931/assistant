@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 // import { Container, Btn } from "./component/theme";
 import ReactTable from "./component/table";
 import DataList, { ErrorMsg, Submit, Title } from "./component/form";
@@ -9,8 +9,6 @@ import {
     Container,
     Stack,
     Typography,
-    AppBar,
-    Toolbar,
     IconButton,
     Menu,
     Tooltip,
@@ -24,16 +22,35 @@ import {
     TextField,
     Alert,
 } from "@mui/material";
+import api from "./api";
+import { useSelector, useDispatch } from "react-redux/es/exports";
+import {
+    fetchItem,
+    selectItemData,
+    selectItemType,
+    selectItemId,
+    selectItemName,
+    setItemName,
+    setItemData,
+    setItemType,
+    setItemId,
+} from "./itemSlice";
+import { useEffect } from "react";
 
 const Item = (props) => {
-    const [type, setType] = useState("");
-    const [id, setId] = useState("");
-    const [name, setName] = useState("");
-    const rawData =
-        JSON.parse(localStorage.getItem("itemData")).length > 0
-            ? JSON.parse(localStorage.getItem("itemData"))
-            : [{ itemType: "暫無資料" }];
-    const [data, setData] = useState(rawData);
+    // const [type, setType] = useState("");
+    // const [id, setId] = useState("");
+    // const [name, setName] = useState("");
+    // const rawData =
+    //     JSON.parse(localStorage.getItem("itemData")).length > 0
+    //         ? JSON.parse(localStorage.getItem("itemData"))
+    //         : [{ itemType: "暫無資料" }];
+    // const [data, setData] = useState(rawData);
+    const itemData = useSelector(selectItemData);
+    const itemType = useSelector(selectItemType);
+    const itemId = useSelector(selectItemId);
+    const itemName = useSelector(selectItemName);
+    const dispatch = useDispatch();
     const [alert, setAlert] = useState(false);
     /*const [data, setData] = useState(
         JSON.parse(localStorage.getItem("itemData"))
@@ -41,9 +58,22 @@ const Item = (props) => {
     // const refAlert = useRef("");
     const [msg, setMsg] = useState("");
 
-    let typeData = [Object.keys(data).length];
-    typeData = data.map((item) => item.itemType);
+    useEffect(() => {
+        async function init() {
+            await dispatch(fetchItem());
+        }
+
+        init();
+    });
+
+    // get unique itemType
+    let typeData = [Object.keys(itemData).length];
+    typeData = itemData.map((item) => item.itemType);
     typeData = [...new Set(typeData)];
+
+    // let typeData = [Object.keys(data).length];
+    // typeData = data.map((item) => item.itemType);
+    // typeData = [...new Set(typeData)];
 
     // const typeList =
     //     typeData[0] != "暫無資料"
@@ -58,11 +88,14 @@ const Item = (props) => {
     //     <option value={item.itemName} key={item.itemId}></option>
     // ));
 
-    const typeList = typeData[0] != "暫無資料" ? typeData : [];
-    const idList =
-        data[0].itemId != "暫無資料" ? data.map((item) => item.id) : [];
-    const nameList =
-        data[0].itemId != "暫無資料" ? data.map((item) => item.itemName) : [];
+    // const typeList = typeData[0] != "暫無資料" ? typeData : [];
+    // const idList =
+    //     data[0].itemId != "暫無資料" ? data.map((item) => item.id) : [];
+    // const nameList =
+    //     data[0].itemId != "暫無資料" ? data.map((item) => item.itemName) : [];
+    const typeList = typeData ? typeData : [];
+    const idList = itemData ? itemData.map((item) => item.itemId) : [];
+    const nameList = itemData ? itemData.map((item) => item.itemName) : [];
 
     const alert_check = () => {
         if (alert === true) {
@@ -75,7 +108,9 @@ const Item = (props) => {
         //     alert.current.style.display = "none";
         // }
         alert_check();
-        setType(e.target.value);
+        // setType(e.target.value);
+        dispatch(setItemType(e.target.value));
+        console.log("itemType :>> ", itemType);
     };
 
     const handleId = (e) => {
@@ -83,7 +118,9 @@ const Item = (props) => {
         //     alert.style.display = "none";
         // }
         alert_check();
-        setId(e.target.value);
+        // setId(e.target.value);
+        dispatch(setItemId(e.target.value));
+        console.log("itemId :>> ", itemId);
     };
 
     const handleName = (e) => {
@@ -91,8 +128,21 @@ const Item = (props) => {
         //     alert.current.style.display = "none";
         // }
         alert_check();
-        setName(e.target.value);
+        // setName(e.target.value);
+        dispatch(setItemName(e.target.value));
+        console.log("itemName :>> ", itemName);
     };
+
+    async function addItem(name) {
+        const newData = {
+            itemType: itemType,
+            itemId: itemId,
+            itemName: itemName,
+        };
+
+        await api("item", "post", newData);
+        await dispatch(fetchItem());
+    }
 
     const handleItemSubmit = (e) => {
         e.preventDefault();
@@ -104,34 +154,40 @@ const Item = (props) => {
         //     return;
         // }
 
-        if (type === "暫無資料" || id === "暫無資料" || name === "暫無資料") {
-            setMsg("請不要輸入系統預設的資料");
-            // alert.current.style.display = "block";
-            // alert = true;
-            setAlert(true);
-            return;
-        }
+        // if (type === "暫無資料" || id === "暫無資料" || name === "暫無資料") {
+        //     setMsg("請不要輸入系統預設的資料");
+        //     alert.current.style.display = "block";
+        //     alert = true;
+        //     setAlert(true);
+        //     return;
+        // }
 
-        if (data.filter((item, i) => data[i].itemId === id).length > 0) {
-            // alert.current.style.display = "block";
+        // if (data.filter((item, i) => data[i].itemId === id).length > 0) {
+        //     alert.current.style.display = "block";
+        //     setMsg("項目編碼是唯一值，請不要輸入重複的項目編碼");
+        //     setAlert(true);
+        //     return;
+        // }
+        if (itemData.filter((item, i) => item.itemId === itemId).length > 0) {
             setMsg("項目編碼是唯一值，請不要輸入重複的項目編碼");
             setAlert(true);
             return;
         }
 
-        const newData = {
-            itemType: type,
-            itemId: id,
-            itemName: name,
-        };
+        // const newData = {
+        //     itemType: type,
+        //     itemId: id,
+        //     itemName: name,
+        // };
 
-        if (data[0].itemType === "暫無資料") {
-            data.splice(0, 1);
-        }
+        // if (data[0].itemType === "暫無資料") {
+        //     data.splice(0, 1);
+        // }
 
-        setData([...data, newData]);
-        data.push(newData);
-        localStorage.setItem("itemData", JSON.stringify(data));
+        // setData([...data, newData]);
+        // data.push(newData);
+        // localStorage.setItem("itemData", JSON.stringify(data));
+        addItem();
     };
     console.log("typeList :>> ", typeList);
     console.log("idList :>> ", idList);
@@ -216,8 +272,10 @@ const Item = (props) => {
             <Box>
                 <Title text="項目表" />
                 <ReactTable
-                    data={data}
-                    col={JSON.parse(localStorage.getItem("itemCol"))}
+                    // data={data}
+                    // col={JSON.parse(localStorage.getItem("itemCol"))}
+                    data={itemData ? itemData : []}
+                    col={[]}
                 ></ReactTable>
             </Box>
         </Box>

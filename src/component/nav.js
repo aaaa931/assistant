@@ -10,6 +10,7 @@ import {
     styled,
 } from "@mui/material/styles";
 // import theme, { NavContainer, Text, TextUrl } from "./theme";
+import { themeFn, getTheme } from "./theme";
 import {
     Box,
     Button,
@@ -23,8 +24,6 @@ import {
     Tooltip,
     MenuItem,
     Switch,
-    FormGroup,
-    FormControlLabel,
     CssBaseline,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -269,39 +268,6 @@ export default function Nav(props) {
 
         setStyle(localStorage.getItem("webStyle"));
     };
-
-    const themeFn = (element, style1, style2) => {
-        for (let i = 0; i < element.length; i++) {
-            element[i].classList.add(style1);
-            element[i].classList.remove(style2);
-        }
-    };
-
-    const getTheme = (mode) => ({
-        palette: {
-            mode,
-            primary: {
-                ...(mode === "light"
-                    ? { main: "#e8e8e8" }
-                    : { main: "#1f2022" }),
-            },
-            success: {
-                ...(mode === "light"
-                    ? { main: "#2cce82" }
-                    : { main: "#196354" }),
-            },
-            danger: {
-                ...(mode === "light"
-                    ? { light: "#fa8a93", main: "#fa8a93" }
-                    : { light: "#fa8a93", main: "#dc3545" }),
-            },
-            text: {
-                ...(mode === "light"
-                    ? { primary: "#828282" }
-                    : { primary: "#ccc" }),
-            },
-        },
-    });
 
     const theme = createTheme(getTheme(style));
 

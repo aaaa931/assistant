@@ -48,13 +48,7 @@ const getSort = (sort, sortBy) => {
 };
 
 const ColList = (props) => {
-    const columns = [
-        { id: "itemId", label: "項目編號", numeric: false },
-        { id: "itemName", label: "項目名稱", numeric: false },
-        { id: "itemType", label: "項目類別", numeric: false },
-    ];
-
-    const { sortBy, sort } = props;
+    const { columns, sortBy, sort } = props;
 
     const handleSortCreate = (property) => (e) => {
         props.onSort(e, property);
@@ -63,23 +57,57 @@ const ColList = (props) => {
     return (
         <TableHead>
             <TableRow>
-                {columns.map((col) => (
-                    <TableCell
-                        align={col.numeric ? "right" : "left"}
-                        key={col.id}
-                        sortDirection={sortBy === col.id ? sort : false}
-                    >
-                        <TableSortLabel
-                            active={sortBy === col.id}
-                            direction={sortBy === col.id ? sort : "asc"}
-                            onClick={handleSortCreate(col.id)}
+                {columns.length > 0 ? (
+                    columns.map((col) => (
+                        <TableCell
+                            align={"center"}
+                            key={col.id}
+                            sortDirection={sortBy === col.id ? sort : false}
                         >
-                            {col.label}
-                        </TableSortLabel>
+                            <TableSortLabel
+                                active={sortBy === col.id}
+                                direction={sortBy === col.id ? sort : "asc"}
+                                onClick={handleSortCreate(col.id)}
+                            >
+                                {col.label}
+                            </TableSortLabel>
+                        </TableCell>
+                    ))
+                ) : (
+                    <TableCell align={"center"} key={"no col"}>
+                        資料異常
                     </TableCell>
-                ))}
+                )}
             </TableRow>
         </TableHead>
+    );
+};
+
+const RowList = (props) => {
+    const { rows, page, rowsPerPage, sort, sortBy, colCount } = props;
+    console.log("rows :>> ", rows);
+
+    return rows.length > 0 ? (
+        rows
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .sort(getSort(sort, sortBy))
+            .map((row) => {
+                return (
+                    <TableRow hover tabIndex={-1} key={row.itemId}>
+                        {Object.entries(row).map((cell) => (
+                            <TableCell align="center" key={cell[1]}>
+                                {cell[1]}
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                );
+            })
+    ) : (
+        <TableRow hover tabIndex={-1} key="no data">
+            <TableCell align="center" colSpan={colCount}>
+                暫無資料
+            </TableCell>
+        </TableRow>
     );
 };
 
@@ -100,14 +128,25 @@ const ReactTable = (props) => {
     //         </TableCell>
     // ));
 
+    const columns = [
+        { id: "itemId", label: "項目編號" },
+        { id: "itemName", label: "項目名稱" },
+        { id: "itemType", label: "項目類別" },
+    ];
+
     const rows = [
         { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
+        { itemId: "F002", itemName: "香蕉", itemType: "食物" },
+        { itemId: "M001", itemName: "水電費", itemType: "月支出" },
+        { itemId: "M002", itemName: "通勤費", itemType: "月支出" },
+        { itemId: "O001", itemName: "交際費", itemType: "其他支出" },
+        { itemId: "O002", itemName: "設備費", itemType: "其他支出" },
     ];
+    console.log("rows :>> ", rows);
+
+    // const columns = props.col.length > 0 ? props.col : [];
+    // const rows = props.data.length > 0 ? props.data : [];
+    const colCount = columns.length > 0 ? Object.keys(columns[0]).length : 1;
 
     const handleSort = (e, property) => {
         const isAsc = sortBy === property && sort === "asc";
@@ -189,27 +228,51 @@ const ReactTable = (props) => {
         <Box>
             <TableContainer>
                 <Table>
-                    <ColList sort={sort} sortBy={sortBy} onSort={handleSort} />
+                    <ColList
+                        sort={sort}
+                        sortBy={sortBy}
+                        onSort={handleSort}
+                        columns={columns}
+                    />
                     <TableBody>
-                        {rows
-                            .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
-                            )
-                            .sort(getSort(sort, sortBy))
-                            .map((row) => (
-                                <TableRow hover tabIndex={-1} key={row.itemId}>
-                                    <TableCell align="left">
-                                        {row.itemId}
-                                    </TableCell>
-                                    <TableCell align="left">
-                                        {row.itemName}
-                                    </TableCell>
-                                    <TableCell align="left">
-                                        {row.itemType}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                        <RowList
+                            rows={rows}
+                            page={page}
+                            rowsPerPage={rowsPerPage}
+                            sort={sort}
+                            sortBy={sortBy}
+                        />
+                        {/* {rows.length > 0 ? (
+                            rows
+                                .slice(
+                                    page * rowsPerPage,
+                                    page * rowsPerPage + rowsPerPage
+                                )
+                                .sort(getSort(sort, sortBy))
+                                .map((row) => (
+                                    <TableRow
+                                        hover
+                                        tabIndex={-1}
+                                        key={row.itemId}
+                                    >
+                                        <TableCell align="left">
+                                            {row.itemId}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            {row.itemName}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            {row.itemType}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                        ) : (
+                            <TableRow hover tabIndex={-1} key="no data">
+                                <TableCell align="center" colSpan={colCount}>
+                                    暫無資料
+                                </TableCell>
+                            </TableRow>
+                        )} */}
                         {/* {emptyRows > 0 && (
                             <TableRow>
                                 <TableCell colspan={3}></TableCell>

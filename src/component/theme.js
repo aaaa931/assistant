@@ -120,6 +120,35 @@ const Table = styled.table`
     box-shadow: ${(props) => props.theme.lowShadow};
 `;
 
+const themeFn = (element, style1, style2) => {
+    for (let i = 0; i < element.length; i++) {
+        element[i].classList.add(style1);
+        element[i].classList.remove(style2);
+    }
+};
+
+const getTheme = (mode) => ({
+    palette: {
+        mode,
+        primary: {
+            ...(mode === "light" ? { main: "#e8e8e8" } : { main: "#1f2022" }),
+        },
+        success: {
+            ...(mode === "light" ? { main: "#2cce82" } : { main: "#196354" }),
+        },
+        danger: {
+            ...(mode === "light"
+                ? { light: "#fa8a93", main: "#fa8a93" }
+                : { light: "#fa8a93", main: "#dc3545" }),
+        },
+        text: {
+            ...(mode === "light"
+                ? { primary: "#828282" }
+                : { primary: "#ccc" }),
+        },
+    },
+});
+
 export default theme;
 export {
     Container,
@@ -136,4 +165,6 @@ export {
     AlertDanger,
     Input,
     Table,
+    themeFn,
+    getTheme,
 };
