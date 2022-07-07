@@ -64,9 +64,10 @@ const Item = (props) => {
         }
 
         init();
-    });
+    }, []);
 
     // get unique itemType
+    console.log("itemData :>> ", itemData);
     let typeData = [Object.keys(itemData).length];
     typeData = itemData.map((item) => item.itemType);
     typeData = [...new Set(typeData)];

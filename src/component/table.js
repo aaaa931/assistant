@@ -241,6 +241,7 @@ const ReactTable = (props) => {
                             rowsPerPage={rowsPerPage}
                             sort={sort}
                             sortBy={sortBy}
+                            colCount={colCount}
                         />
                         {/* {rows.length > 0 ? (
                             rows
@@ -271,11 +272,6 @@ const ReactTable = (props) => {
                                 <TableCell align="center" colSpan={colCount}>
                                     暫無資料
                                 </TableCell>
-                            </TableRow>
-                        )} */}
-                        {/* {emptyRows > 0 && (
-                            <TableRow>
-                                <TableCell colspan={3}></TableCell>
                             </TableRow>
                         )} */}
                     </TableBody>

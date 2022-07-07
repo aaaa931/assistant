@@ -23,55 +23,94 @@ import {
     CssBaseline,
     Alert,
 } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import {
+    fetchAccounting,
+    selectAccountingData,
+    selectAccountingId,
+    selectAccountingPrice,
+    selectAccountingTotal,
+    setAccountingId,
+    setAccountingPrice,
+    setAccountingTotal,
+} from "./accountingSlice";
+import { selectItemData } from "./itemSlice";
+import api from "./api";
 
 const Accounting = (props) => {
-    const [id, setId] = useState("");
-    const [price, setPrice] = useState("");
-    const rawItemData =
-        JSON.parse(localStorage.getItem("itemData")).length > 0
-            ? JSON.parse(localStorage.getItem("itemData"))
-            : [{ itemId: "", itemName: "" }];
-    const [itemData, setItemData] = useState(rawItemData);
+    // const [id, setId] = useState("");
+    // const [price, setPrice] = useState("");
+    // const rawItemData =
+    //     JSON.parse(localStorage.getItem("itemData")).length > 0
+    //         ? JSON.parse(localStorage.getItem("itemData"))
+    //         : [{ itemId: "", itemName: "" }];
+    // const [itemData, setItemData] = useState(rawItemData);
+    // const [total, setTotal] = useState(0);
+    const itemData = useSelector(selectItemData);
+    const accountingData = useSelector(selectAccountingData);
+    const accountingId = useSelector(selectAccountingId);
+    const accountingPrice = useSelector(selectAccountingPrice);
+    const accountingTotal = useSelector(selectAccountingTotal);
+    const dispatch = useDispatch();
     // const refAlert = useRef("");
     const [alert, setAlert] = useState(false);
     const [msg, setMsg] = useState("");
-    const [total, setTotal] = useState(0);
     // YYYY-MM-DD
     const today = new Date().toISOString().substring(0, 10);
     // YYYY-MM
     const month = today.substring(0, 7);
-    let rawAccountingData;
+    // let rawAccountingData;
 
-    if (JSON.parse(localStorage.getItem("accountingData")).length > 0) {
-        rawAccountingData = JSON.parse(
-            localStorage.getItem("accountingData")
-        ).filter((item) => {
-            if (item.accountingDate.includes(month)) {
-                return JSON.parse(localStorage.getItem("accountingData"));
-            } else {
-                return;
-            }
-        });
+    // if (JSON.parse(localStorage.getItem("accountingData")).length > 0) {
+    //     rawAccountingData = JSON.parse(
+    //         localStorage.getItem("accountingData")
+    //     ).filter((item) => {
+    //         if (item.accountingDate.includes(month)) {
+    //             return JSON.parse(localStorage.getItem("accountingData"));
+    //         } else {
+    //             return;
+    //         }
+    //     });
 
-        if (rawAccountingData.length < 1) {
-            rawAccountingData = ["暫無資料"];
-        }
-    } else {
-        rawAccountingData = ["暫無資料"];
-    }
+    //     if (rawAccountingData.length < 1) {
+    //         rawAccountingData = ["暫無資料"];
+    //     }
+    // } else {
+    //     rawAccountingData = ["暫無資料"];
+    // }
 
-    const [accountingData, setAccountingData] = useState(rawAccountingData);
+    // const [accountingData, setAccountingData] = useState(rawAccountingData);
 
     useEffect(() => {
-        let priceAll = 0;
-        const temp = accountingData.map((item) => {
-            const price = isNaN(item.accountingPrice)
-                ? 0
-                : parseInt(item.accountingPrice);
-            priceAll = priceAll + price;
-            return price;
-        });
-        setTotal(priceAll);
+        // let priceAll = 0;
+        // const temp = accountingData.map((item) => {
+        //     const price = isNaN(item.accountingPrice)
+        //         ? 0
+        //         : parseInt(item.accountingPrice);
+        //     priceAll = priceAll + price;
+        //     return price;
+        // });
+        // setTotal(priceAll);
+        async function init() {
+            let priceAll = 0;
+
+            const filter = {
+                accountingDate: month,
+            };
+
+            accountingData.map((acc) => {
+                const price = isNaN(acc.accountingPrice)
+                    ? 0
+                    : parseInt(acc.accountingPrice);
+                priceAll = priceAll + price;
+                return price;
+            });
+
+            await dispatch(fetchAccounting(filter));
+            await dispatch(setAccountingTotal(priceAll));
+        }
+
+        init();
     }, []);
 
     // const idList = itemData.map((item) => (
@@ -80,8 +119,7 @@ const Accounting = (props) => {
     //     </option>
     // ));
 
-    const idList =
-        itemData[0].itemId != "暫無資料" ? itemData.map((item) => item.id) : [];
+    const idList = itemData ? itemData.map((item) => item.itemId) : [];
 
     const alert_check = () => {
         if (alert === true) {
@@ -91,13 +129,34 @@ const Accounting = (props) => {
 
     const handleId = (e) => {
         alert_check();
-        setId(e.target.value);
+        // setId(e.target.value);
+        dispatch(setAccountingId(e.target.value));
     };
 
     const handlePrice = (e) => {
         alert_check();
-        setPrice(e.target.value);
+        // setPrice(e.target.value);
+        dispatch(setAccountingPrice(e.target.value));
     };
+
+    async function addAccounting(itemFilter) {
+        const name = itemFilter[0].itemName;
+        const type = itemFilter[0].itemType;
+
+        const newData = {
+            accountingType: type,
+            accountingId: accountingId,
+            accountingName: name,
+            accountingPrice: accountingPrice,
+            accountingDate: today,
+        };
+
+        dispatch(
+            setAccountingTotal(accountingTotal + parseInt(accountingPrice))
+        );
+        await api("accounting", "post", newData);
+        await dispatch(fetchAccounting(month));
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -108,32 +167,44 @@ const Accounting = (props) => {
         //     return;
         // }
 
-        if (itemData.filter((item, i) => item.itemId == id).length < 1) {
+        // if (itemData.filter((item, i) => item.itemId == id).length < 1) {
+        //     setMsg("請確認輸入的編號為已經登記在項目表上的編號");
+        //     refAlert.current.style.display = "block";
+        //     setAlert(true);
+        //     return;
+        // }
+
+        // const name = itemData.filter((item) => item.itemId === id)[0].itemName;
+        // const type = itemData.filter((item) => item.itemId === id)[0].itemType;
+
+        const itemFilter = itemData.filter(
+            (item) => item.itemId === accountingId
+        );
+
+        if (itemFilter.length < 1) {
             setMsg("請確認輸入的編號為已經登記在項目表上的編號");
-            // refAlert.current.style.display = "block";
             setAlert(true);
             return;
         }
 
-        const name = itemData.filter((item) => item.itemId === id)[0].itemName;
-        const type = itemData.filter((item) => item.itemId === id)[0].itemType;
+        addAccounting(itemFilter);
 
-        const newData = {
-            accountingType: type,
-            accountingId: id,
-            accountingName: name,
-            accountingPrice: price,
-            accountingDate: today,
-        };
+        // const newData = {
+        //     accountingType: type,
+        //     accountingId: accountingId,
+        //     accountingName: name,
+        //     accountingPrice: accountingPrice,
+        //     accountingDate: today,
+        // };
 
-        if (accountingData[0] === "暫無資料") {
-            accountingData.splice(0, 1);
-        }
+        // if (accountingData[0] === "暫無資料") {
+        //     accountingData.splice(0, 1);
+        // }
 
-        setTotal(total + parseInt(price));
-        setAccountingData([...accountingData, newData]);
-        accountingData.push(newData);
-        localStorage.setItem("accountingData", JSON.stringify(accountingData));
+        // setTotal(total + parseInt(price));
+        // setAccountingData([...accountingData, newData]);
+        // accountingData.push(newData);
+        // localStorage.setItem("accountingData", JSON.stringify(accountingData));
     };
 
     return (
@@ -208,7 +279,7 @@ const Accounting = (props) => {
                 ></ReactTable>
                 <Box mb={5}>
                     <Typography variant="h3" textAlign={"right"}>
-                        總金額：{total}
+                        總金額：{accountingTotal}
                     </Typography>
                 </Box>
             </Box>

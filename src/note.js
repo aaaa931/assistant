@@ -148,11 +148,24 @@ const Edit = (props) => {
         dispatch(setNote(result));
     }*/
 
+    const init = async () => {
+        await dispatch(fetchNote(filter));
+        web_style();
+    };
+
     useEffect(() => {
         //fetchData();
-        dispatch(fetchNote(filter));
-        web_style();
+        // dispatch(fetchNote(filter));
+        // web_style();
+        init();
     }, [filter]);
+
+    useEffect(() => {
+        //fetchData();
+        // dispatch(fetchNote(filter));
+        // web_style();
+        init();
+    }, []);
 
     // init
     /*if (!note) {

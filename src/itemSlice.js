@@ -4,7 +4,9 @@ import api from "./api";
 export const fetchItem = createAsyncThunk(
     "fetchItem",
     async (filter, { dispatch }) => {
-        const response = await api("item", "get", filter);
+        const response = (await api("item", "get", filter))
+            ? await api("item", "get", filter)
+            : [];
         console.log("fetchItem response :>> ", response);
         dispatch(setItemData(response));
 
@@ -22,16 +24,16 @@ export const itemSlice = createSlice({
     },
     reducers: {
         setItemData: (state, action) => {
-            state.note = action.payload;
+            state.itemData = action.payload;
         },
         setItemType: (state, action) => {
-            state.filter = action.payload;
+            state.itemType = action.payload;
         },
         setItemId: (state, action) => {
-            state.filter = action.payload;
+            state.itemId = action.payload;
         },
         setItemName: (state, action) => {
-            state.filter = action.payload;
+            state.itemName = action.payload;
         },
     },
 });
