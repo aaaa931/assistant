@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const noteAPI = axios.create({
-    baseURL: "http://192.168.2.128:3000/api/",
+    // baseURL: "http://192.168.2.128:3000/api/",
+    baseURL: "http://localhost:5000/",
     timeout: 2000,
 });
 
