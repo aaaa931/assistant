@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: "http://192.168.2.128:3000/api/",
+    // baseURL: "http://192.168.2.128:3000/api/",
+    baseURL: "http://localhost:5000/",
     timeout: 3000,
 });
 
@@ -36,7 +37,7 @@ export default async function (url, type, data = null) {
             return result;
         case "put":
             await instance
-                .put(url, data)
+                .put(`${url}/${data.id}`, data)
                 .then((res) => {
                     console.log(`put ${url} success `);
                 })
@@ -45,8 +46,9 @@ export default async function (url, type, data = null) {
                 });
             break;
         case "delete":
+            // data = id
             await instance
-                .delete(url)
+                .delete(`${url}/${data}`)
                 .then((res) => {
                     console.log(`delete ${url} success `);
                 })

@@ -1,5 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "./api";
 import axios from "axios";
+
+export const fetchNote = createAsyncThunk(
+    "fetchNote",
+    async (filter, { dispatch }) => {
+        // const response = (await api("record", "get", filter))
+        //     ? await api("record", "get", filter)
+        //     : [];
+        const data = await api("record", "get", filter);
+        const response = data ? data : [];
+
+        console.log("fetchNote response :>> ", response);
+        dispatch(setNote(response));
+
+        return response;
+    }
+);
 
 const noteAPI = axios.create({
     // baseURL: "http://192.168.2.128:3000/api/",
@@ -44,7 +61,7 @@ export const putNote = createAsyncThunk("putNote", async (data) => {
             console.log("put success :>> ");
         })
         .catch((error) => {
-            console.log("put failed :>> ");
+            console.log("put failed :>> ", error);
         });
 });
 
@@ -60,23 +77,24 @@ export const delNote = createAsyncThunk("delNote", async (id) => {
         });
 });
 
-export const fetchNote = createAsyncThunk(
-    "fetchNote",
-    async (filter, { dispatch }) => {
-        const response = await getNote(filter);
-        console.log("fetchnote filter :>> ", filter);
-        console.log("response :>> ", response);
-        dispatch(setNote(response));
+// export const fetchNote = createAsyncThunk(
+//     "fetchNote",
+//     async (filter, { dispatch }) => {
+//         const response = await getNote(filter);
+//         console.log("fetchnote filter :>> ", filter);
+//         console.log("response :>> ", response);
+//         dispatch(setNote(response));
 
-        return response;
-    }
-);
+//         return response;
+//     }
+// );
 
 export const noteSlice = createSlice({
     name: "noteSlice",
     initialState: {
         note: null,
-        filter: "all",
+        // filter: "all",
+        filter: { status: "all" },
     },
     reducers: {
         setNote: (state, action) => {

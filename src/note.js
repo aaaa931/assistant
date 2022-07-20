@@ -31,6 +31,7 @@ import {
     delNote,
     fetchNote,
 } from "./noteSlice";
+import api from "./api";
 
 const NoteInput = (props) => {
     const [name, setName] = useState("");
@@ -88,10 +89,6 @@ const FilterBtn = (props) => {
     const filter = useSelector(selectFilter);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        web_style();
-    }, []);
-
     return (
         <Button
             className="h-300rem"
@@ -99,7 +96,7 @@ const FilterBtn = (props) => {
             fullWidth
             onClick={() => {
                 async function setfilter() {
-                    dispatch(setFilter(props.name));
+                    dispatch(setFilter({ status: props.name }));
                     await props.fetchData(filter);
                 }
                 setfilter();
@@ -187,7 +184,9 @@ const Edit = (props) => {
 
         // await addNote(newNote);
         // await fetchData();
-        await dispatch(addNote(newNote));
+
+        // await dispatch(addNote(newNote));
+        await api("record", "post", newNote);
         await dispatch(fetchNote());
     }
 
@@ -204,14 +203,18 @@ const Edit = (props) => {
 
         // await putNote(newNote);
         // await fetchData();
-        await dispatch(putNote(newNote));
-        await dispatch(fetchNote(newNote));
+
+        // await dispatch(putNote(newNote));
+        await api("record", "put", newNote);
+        await dispatch(fetchNote());
     }
 
     async function deleteNote(id) {
         // await delNote(id);
         // await fetchData();
-        await dispatch(delNote(id));
+
+        // await dispatch(delNote(id));
+        await api("record", "delete", id);
         await dispatch(fetchNote());
     }
 
@@ -224,8 +227,10 @@ const Edit = (props) => {
 
         // await putNote(newNote);
         // await fetchData();
-        await dispatch(putNote(newNote));
-        await dispatch(fetchNote(newNote));
+
+        // await dispatch(putNote(newNote));
+        await api("record", "put", newNote);
+        await dispatch(fetchNote());
     }
 
     const filterList = filterName.map((name) => (
@@ -247,7 +252,7 @@ const Edit = (props) => {
     ));
 
     const noteList = note
-        ? note.filter(filterType[filter]).map((note) => (
+        ? note.filter(filterType[filter.status]).map((note) => (
               /*<Task
                       id={note.id}
                       name={note.data}

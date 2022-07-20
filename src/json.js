@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const json_get = (url, cb, params = null) => {
+const json_get = (url, params = null, cb) => {
     const path = `src/data/${url}.json`;
 
     fs.readFile(path, (error, dataList) => {
@@ -19,12 +19,12 @@ const json_get = (url, cb, params = null) => {
 
 exports.json_get = json_get;
 
-exports.json_post = (url, newData) => {
+exports.json_post = (url, newData, cb) => {
     const path = `src/data/${url}.json`;
 
     fs.readFile(path, (error, dataList) => {
         if (error) {
-            return console.log("json_insert error :>> ", error);
+            return console.log("json_post error :>> ", error);
         }
 
         // let data = dataList.toString();
@@ -32,7 +32,8 @@ exports.json_post = (url, newData) => {
         // data.push(newData);
         // data = JSON.stringify(data);
         let data = dataList.length > 0 ? JSON.parse(dataList) : [];
-        const id = Math.max(...data.map((data) => data.id)) + 1;
+        const maxId = Math.max(...data.map((data) => data.id));
+        const id = maxId === 0 ? 0 : maxId + 1;
         newData.id = id;
         data.push(newData);
         data = JSON.stringify(data);
@@ -43,36 +44,85 @@ exports.json_post = (url, newData) => {
 
         fs.writeFile(path, data, (error) => {
             if (error) {
-                console.log("json_insert error :>> ", error);
+                console.log("json_post writeFile error :>> ", error);
             } else {
-                console.log("json_insert success :>> ");
+                console.log("json_post writeFile success :>> ");
             }
         });
     });
+
+    cb();
 };
 
-exports.json_put = (url, id, newData) => {
+exports.json_put = (url, id, newData = "", cb) => {
+    const path = `src/data/${url}.json`;
+    console.log("put newData", newData);
+
+    fs.readFile(path, (error, dataList) => {
+        if (error) {
+            return console.log("json_put error :>> ", error);
+        }
+
+        let data = dataList.length > 0 ? JSON.parse(dataList) : [];
+        console.log("data.length :>> ", data.length);
+
+        for (let i in data) {
+            console.log("put val.id :>> ", data[i].id);
+            console.log("put id :>> ", id);
+            if (data[i].id === parseInt(id)) {
+                data[i] = newData;
+                console.log("put data[i]", data[i]);
+                break;
+            }
+        }
+
+        data = JSON.stringify(data);
+        console.log("json_put data", data);
+
+        fs.writeFile(path, data, (error) => {
+            if (error) {
+                console.log("json_put writeFile error :>> ", error);
+            } else {
+                console.log("json_put writeFile success :>> ");
+            }
+        });
+    });
+
+    cb();
+};
+
+exports.json_del = (url, id, cb) => {
     const path = `src/data/${url}.json`;
 
     fs.readFile(path, (error, dataList) => {
         if (error) {
-            return console.log("json_insert error :>> ", error);
+            return console.log("json_del error :>> ", error);
         }
 
         let data = dataList.length > 0 ? JSON.parse(dataList) : [];
+        console.log("data.length :>> ", data.length);
 
-        for (let i; i < data.length; i++) {
-            if (data[i].id === id) {
-                data[i] = newData;
+        for (let i in data) {
+            console.log("put val.id :>> ", data[i].id);
+            console.log("put id :>> ", id);
+            if (data[i].id === parseInt(id)) {
+                data.splice(i, 1);
+                console.log("delete data[i]", data[i]);
+                break;
             }
         }
 
+        data = JSON.stringify(data);
+        console.log("json_del data", data);
+
         fs.writeFile(path, data, (error) => {
             if (error) {
-                console.log("json_insert error :>> ", error);
+                console.log("json_del writeFile error :>> ", error);
             } else {
-                console.log("json_insert success :>> ");
+                console.log("json_del writeFile success :>> ");
             }
         });
     });
+
+    cb();
 };

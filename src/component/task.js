@@ -87,6 +87,7 @@ const Task = (props) => {
                         fullWidth
                         variant="contained"
                         color="success"
+                        onClick={handleSubmit}
                     >
                         確認
                     </Button>
@@ -130,18 +131,18 @@ const Task = (props) => {
                         control={
                             <Checkbox
                                 icon={
-                                    <Bookmark
-                                        color="success"
-                                        fontSize="large"
-                                    />
-                                }
-                                checkedIcon={
                                     <BookmarkBorder
                                         color="success"
                                         fontSize="large"
                                     />
                                 }
-                                defaultChecked={props.completed}
+                                checkedIcon={
+                                    <Bookmark
+                                        color="success"
+                                        fontSize="large"
+                                    />
+                                }
+                                checked={props.completed}
                                 onChange={() => props.toggleCompleted(props.id)}
                             />
                         }
