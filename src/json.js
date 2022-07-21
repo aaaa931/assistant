@@ -33,7 +33,7 @@ exports.json_post = (url, newData, cb) => {
         // data = JSON.stringify(data);
         let data = dataList.length > 0 ? JSON.parse(dataList) : [];
         const maxId = Math.max(...data.map((data) => data.id));
-        const id = maxId === 0 ? 0 : maxId + 1;
+        const id = maxId < 0 ? 0 : maxId + 1;
         newData.id = id;
         data.push(newData);
         data = JSON.stringify(data);

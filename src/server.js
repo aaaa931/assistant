@@ -73,7 +73,63 @@ app.delete("/record/:id", (req, res) => {
 });
 
 app.get("/item", (req, res) => {
-    res.send(`item test success`);
+    const query = req.query;
+
+    const getData = (data, query = null) => {
+        console.log("query", query);
+        const keys = Object.keys(query);
+        const key = keys.length > 0 ? keys[0] : "";
+        const result = data.filter((data) => {
+            if (key.length > 0) {
+                console.log("query success");
+                console.log("data[key]", data[key]);
+                return data[key].toString() === query[key];
+            }
+
+            return data;
+        });
+
+        res.send(result);
+    };
+
+    json_get("item", query, getData);
+    console.log(`item get success`);
+});
+
+app.post("/item", (req, res) => {
+    json_post("item", req.body, success(res));
+    console.log("post req.body", req.body);
+    console.log(`item post success`);
+});
+
+app.get("/accounting", (req, res) => {
+    const query = req.query;
+
+    const getData = (data, query = null) => {
+        console.log("query", query);
+        const keys = Object.keys(query);
+        const key = keys.length > 0 ? keys[0] : "";
+        const result = data.filter((data) => {
+            if (key.length > 0 && data[key]) {
+                console.log("query success");
+                console.log("data[key]", data[key]);
+                return data[key].toString().includes(query[key]);
+            }
+
+            return data;
+        });
+
+        res.send(result);
+    };
+
+    json_get("accounting", query, getData);
+    console.log(`accounting get success`);
+});
+
+app.post("/accounting", (req, res) => {
+    json_post("accounting", req.body, success(res));
+    console.log("post req.body", req.body);
+    console.log(`accounting post success`);
 });
 
 app.listen(port, () => {

@@ -4,23 +4,6 @@ import React, { useMemo, useState } from "react";
 // import { Table, Text } from "./theme";
 import {
     Box,
-    Button,
-    Container,
-    Stack,
-    Typography,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Menu,
-    Tooltip,
-    MenuItem,
-    Switch,
-    FormGroup,
-    FormControlLabel,
-    TextField,
-    Autocomplete,
-    CssBaseline,
-    Alert,
     TableContainer,
     Table,
     TableBody,
@@ -32,13 +15,20 @@ import {
 } from "@mui/material";
 
 const sort_desc = (a, b, sortBy) => {
-    if (a[sortBy] > b[sortBy]) {
-        return -1;
-    } else if (a[sortBy] < b[sortBy]) {
-        return 1;
-    }
+    // if (a[sortBy] > b[sortBy]) {
+    //     return -1;
+    // } else if (a[sortBy] < b[sortBy]) {
+    //     return 1;
+    // }
 
-    return 0;
+    // return 0;
+
+    const x = a[sortBy].toString();
+    const y = b[sortBy].toString();
+
+    console.log("a[sortBy] :>> ", x);
+    console.log("b[sortBy] :>> ", y);
+    return -x.localeCompare(y, "zh-hant");
 };
 
 const getSort = (sort, sortBy) => {
@@ -93,12 +83,16 @@ const RowList = (props) => {
             .sort(getSort(sort, sortBy))
             .map((row) => {
                 return (
-                    <TableRow hover tabIndex={-1} key={row.itemId}>
-                        {Object.entries(row).map((cell) => (
-                            <TableCell align="center" key={cell[1]}>
-                                {cell[1]}
-                            </TableCell>
-                        ))}
+                    <TableRow hover tabIndex={-1} key={row.id}>
+                        {Object.entries(row).map((cell) => {
+                            if (cell[0] !== "id") {
+                                return (
+                                    <TableCell align="center" key={cell[1]}>
+                                        {cell[1]}
+                                    </TableCell>
+                                );
+                            }
+                        })}
                     </TableRow>
                 );
             })
@@ -116,37 +110,32 @@ const ReactTable = (props) => {
     // const data = useMemo(() => tableRow, [props.data]);
     // const columns = useMemo(() => props.col, [props.col]);
     const [sort, setSort] = useState("asc");
-    const [sortBy, setSortBy] = useState("itemId");
+    const [sortBy, setSortBy] = useState("id");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(25);
 
-    // const rows = props.data.length > 0 ? props.data : ["暫無資料"];
+    // const columns = [
+    //     { id: "itemId", label: "項目編號" },
+    //     { id: "itemName", label: "項目名稱" },
+    //     { id: "itemType", label: "項目類別" },
+    // ];
 
-    // const colList = columns.map((col) => (
-    //         <TableCell align={col.numeric ? "right" : "left"} key={col.id}>
-    //             {col.label}
-    //         </TableCell>
-    // ));
+    // const rows = [
+    //     { itemId: "F001", itemName: "蘋果", itemType: "食物" },
+    //     { itemId: "F002", itemName: "香蕉", itemType: "食物" },
+    //     { itemId: "M001", itemName: "水電費", itemType: "月支出" },
+    //     { itemId: "M002", itemName: "通勤費", itemType: "月支出" },
+    //     { itemId: "O001", itemName: "交際費", itemType: "其他支出" },
+    //     { itemId: "O002", itemName: "設備費", itemType: "其他支出" },
+    // ];
 
-    const columns = [
-        { id: "itemId", label: "項目編號" },
-        { id: "itemName", label: "項目名稱" },
-        { id: "itemType", label: "項目類別" },
-    ];
+    const columns = useMemo(() => (props.col.length > 0 ? props.col : []));
+    const rows = useMemo(() => (props.data.length > 0 ? props.data : []));
+    const colCount = columns.length > 0 ? Object.keys(columns).length : 1;
 
-    const rows = [
-        { itemId: "F001", itemName: "蘋果", itemType: "食物" },
-        { itemId: "F002", itemName: "香蕉", itemType: "食物" },
-        { itemId: "M001", itemName: "水電費", itemType: "月支出" },
-        { itemId: "M002", itemName: "通勤費", itemType: "月支出" },
-        { itemId: "O001", itemName: "交際費", itemType: "其他支出" },
-        { itemId: "O002", itemName: "設備費", itemType: "其他支出" },
-    ];
     console.log("rows :>> ", rows);
-
-    // const columns = props.col.length > 0 ? props.col : [];
-    // const rows = props.data.length > 0 ? props.data : [];
-    const colCount = columns.length > 0 ? Object.keys(columns[0]).length : 1;
+    console.log("colCount :>> ", colCount);
+    console.log("columns :>> ", columns);
 
     const handleSort = (e, property) => {
         const isAsc = sortBy === property && sort === "asc";

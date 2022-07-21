@@ -12,6 +12,19 @@ import {
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { Container, Typography, Box, Divider } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import {
+    fetchAccounting,
+    selectAccountingData,
+    selectAccountingId,
+    selectAccountingPrice,
+    selectAccountingTotal,
+    setAccountingId,
+    setAccountingPrice,
+    setAccountingTotal,
+} from "./accountingSlice";
+import { useEffect } from "react";
+import { fetchItem, selectItemData } from "./itemSlice";
 
 ChartJS.register(
     CategoryScale,
@@ -26,31 +39,57 @@ ChartJS.register(
 const Dashboard = (props) => {
     const chartType = ["圓餅圖", "長條圖"];
     const month = new Date().toISOString().substring(0, 7);
-    const data =
-        JSON.parse(localStorage.getItem("accountingData")) != ""
-            ? JSON.parse(localStorage.getItem("accountingData"))
-            : [
-                  {
-                      accountingType: "暫無資料",
-                      accountingName: "暫無資料",
-                      accountingPrice: 1,
-                  },
-              ];
+    // const data =
+    //     JSON.parse(localStorage.getItem("accountingData")) != ""
+    //         ? JSON.parse(localStorage.getItem("accountingData"))
+    //         : [
+    //               {
+    //                   accountingType: "暫無資料",
+    //                   accountingName: "暫無資料",
+    //                   accountingPrice: 1,
+    //               },
+    //           ];
+    const data = useSelector(selectAccountingData);
+    const itemData = useSelector(selectItemData);
+    const dispatch = useDispatch();
     let dataMap = new Map();
-    data.map((item) => {
-        if (dataMap.get(item.accountingType)) {
-            return dataMap.set(
-                item.accountingType,
-                dataMap.get(item.accountingType) +
-                    parseInt(item.accountingPrice)
-            );
+    let typeList;
+
+    data.map((acc) => {
+        const id = acc.accountingId;
+        const price = acc.accountingPrice;
+        const type = itemData.find((item) => item.itemId === id);
+        console.log("type :>> ", type);
+
+        if (dataMap.get(type)) {
+            return dataMap.set(type, dataMap.get(type) + parseInt(price));
         } else {
-            return dataMap.set(
-                item.accountingType,
-                parseInt(item.accountingPrice)
-            );
+            return dataMap.set(type, parseInt(price));
         }
     });
+
+    console.log("dataMap :>> ", dataMap);
+
+    useEffect(() => {
+        async function init() {
+            const filter = {
+                accountingDate: month,
+            };
+
+            await dispatch(fetchAccounting(filter));
+            await dispatch(fetchItem());
+        }
+
+        init();
+    }, []);
+
+    useEffect(() => {
+        const init_type = async () => {
+            // fix typelist
+        };
+
+        init_type();
+    }, [itemData]);
 
     const bar_option = {
         responsive: true,

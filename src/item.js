@@ -3,25 +3,7 @@ import React, { useState } from "react";
 import ReactTable from "./component/table";
 import DataList, { ErrorMsg, Submit, Title } from "./component/form";
 // import { H2 } from "./component/theme";
-import {
-    Box,
-    Button,
-    Container,
-    Stack,
-    Typography,
-    IconButton,
-    Menu,
-    Tooltip,
-    MenuItem,
-    Switch,
-    FormGroup,
-    FormControl,
-    FormControlLabel,
-    CssBaseline,
-    Grid,
-    TextField,
-    Alert,
-} from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import api from "./api";
 import { useSelector, useDispatch } from "react-redux/es/exports";
 import {
@@ -31,7 +13,6 @@ import {
     selectItemId,
     selectItemName,
     setItemName,
-    setItemData,
     setItemType,
     setItemId,
 } from "./itemSlice";
@@ -57,6 +38,11 @@ const Item = (props) => {
     );*/
     // const refAlert = useRef("");
     const [msg, setMsg] = useState("");
+    const colList = [
+        { id: "itemId", label: "項目編號" },
+        { id: "itemName", label: "項目名稱" },
+        { id: "itemType", label: "項目類別" },
+    ];
 
     useEffect(() => {
         async function init() {
@@ -68,6 +54,10 @@ const Item = (props) => {
 
     // get unique itemType
     console.log("itemData :>> ", itemData);
+    console.log(
+        "itemData.map((item) => item) :>> ",
+        itemData.map((item) => item)
+    );
     let typeData = [Object.keys(itemData).length];
     typeData = itemData.map((item) => item.itemType);
     typeData = [...new Set(typeData)];
@@ -134,11 +124,11 @@ const Item = (props) => {
         console.log("itemName :>> ", itemName);
     };
 
-    async function addItem(name) {
+    async function addItem() {
         const newData = {
-            itemType: itemType,
             itemId: itemId,
             itemName: itemName,
+            itemType: itemType,
         };
 
         await api("item", "post", newData);
@@ -276,7 +266,7 @@ const Item = (props) => {
                     // data={data}
                     // col={JSON.parse(localStorage.getItem("itemCol"))}
                     data={itemData ? itemData : []}
-                    col={[]}
+                    col={colList}
                 ></ReactTable>
             </Box>
         </Box>

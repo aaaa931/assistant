@@ -17,6 +17,12 @@ const Record = (props) => {
     // }
     const accountingData = useSelector(selectAccountingData);
     const dispatch = useDispatch();
+    const colList = [
+        { id: "accountingId", label: "項目編號" },
+        { id: "accountingName", label: "項目名稱" },
+        { id: "accountingPrice", label: "記帳金額" },
+        { id: "accountingDate", label: "記帳日期" },
+    ];
 
     useEffect(() => {
         const init = async () => {
@@ -24,7 +30,7 @@ const Record = (props) => {
         };
 
         init();
-    });
+    }, []);
 
     return (
         // <Container className="container">
@@ -38,10 +44,7 @@ const Record = (props) => {
         // </Container>
         <Box>
             <Title text="過往紀錄" />
-            <ReactTable
-                data={accountingData}
-                col={JSON.parse(localStorage.getItem("accountingCol"))}
-            ></ReactTable>
+            <ReactTable data={accountingData} col={colList}></ReactTable>
         </Box>
     );
 };

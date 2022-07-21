@@ -4,9 +4,8 @@ import api from "./api";
 export const fetchAccounting = createAsyncThunk(
     "fetchAccounting",
     async (filter, { dispatch }) => {
-        const response = (await api("accounting", "get", filter))
-            ? await api("accounting", "get", filter)
-            : [];
+        const data = await api("accounting", "get", filter);
+        const response = data ? data : [];
         console.log("fetchAccounting response :>> ", response);
         dispatch(setAccountingData(response));
 

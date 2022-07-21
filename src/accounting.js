@@ -3,26 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactTable from "./component/table";
 import DataList, { InputN, Submit, ErrorMsg, Title } from "./component/form";
 // import { H2 } from "./component/theme";
-import {
-    Box,
-    Button,
-    Container,
-    Stack,
-    Typography,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Menu,
-    Tooltip,
-    MenuItem,
-    Switch,
-    FormGroup,
-    FormControlLabel,
-    TextField,
-    Autocomplete,
-    CssBaseline,
-    Alert,
-} from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import {
     fetchAccounting,
@@ -34,7 +15,7 @@ import {
     setAccountingPrice,
     setAccountingTotal,
 } from "./accountingSlice";
-import { selectItemData } from "./itemSlice";
+import { fetchItem, selectItemData } from "./itemSlice";
 import api from "./api";
 
 const Accounting = (props) => {
@@ -55,6 +36,12 @@ const Accounting = (props) => {
     // const refAlert = useRef("");
     const [alert, setAlert] = useState(false);
     const [msg, setMsg] = useState("");
+    const colList = [
+        { id: "accountingId", label: "項目編號" },
+        { id: "accountingName", label: "項目名稱" },
+        { id: "accountingPrice", label: "記帳金額" },
+        { id: "accountingDate", label: "記帳日期" },
+    ];
     // YYYY-MM-DD
     const today = new Date().toISOString().substring(0, 10);
     // YYYY-MM
@@ -92,26 +79,33 @@ const Accounting = (props) => {
         // });
         // setTotal(priceAll);
         async function init() {
-            let priceAll = 0;
-
             const filter = {
                 accountingDate: month,
             };
 
-            accountingData.map((acc) => {
-                const price = isNaN(acc.accountingPrice)
-                    ? 0
-                    : parseInt(acc.accountingPrice);
-                priceAll = priceAll + price;
-                return price;
-            });
-
             await dispatch(fetchAccounting(filter));
-            await dispatch(setAccountingTotal(priceAll));
+            await dispatch(fetchItem());
         }
 
         init();
     }, []);
+
+    useEffect(() => {
+        const init_price = () => {
+            let priceAll = 0;
+
+            accountingData.map((acc) => {
+                const accPrice = acc.accountingPrice;
+                const price = isNaN(accPrice) ? 0 : parseInt(accPrice);
+                priceAll = priceAll + price;
+                return price;
+            });
+
+            dispatch(setAccountingTotal(priceAll));
+        };
+
+        init_price();
+    }, [accountingData]);
 
     // const idList = itemData.map((item) => (
     //     <option value={item.itemId} key={item.itemId}>
@@ -127,10 +121,11 @@ const Accounting = (props) => {
         }
     };
 
-    const handleId = (e) => {
+    const handleId = (e, val) => {
+        // val for autocomplete
         alert_check();
         // setId(e.target.value);
-        dispatch(setAccountingId(e.target.value));
+        dispatch(setAccountingId(val));
     };
 
     const handlePrice = (e) => {
@@ -140,11 +135,9 @@ const Accounting = (props) => {
     };
 
     async function addAccounting(itemFilter) {
-        const name = itemFilter[0].itemName;
-        const type = itemFilter[0].itemType;
+        const name = itemFilter.itemName;
 
         const newData = {
-            accountingType: type,
             accountingId: accountingId,
             accountingName: name,
             accountingPrice: accountingPrice,
@@ -177,9 +170,14 @@ const Accounting = (props) => {
         // const name = itemData.filter((item) => item.itemId === id)[0].itemName;
         // const type = itemData.filter((item) => item.itemId === id)[0].itemType;
 
-        const itemFilter = itemData.filter(
+        const itemFilter = itemData.find(
             (item) => item.itemId === accountingId
         );
+
+        console.log("itemData :>> ", itemData);
+        console.log("itemData[0].itemId :>> ", itemData[0].itemId);
+        console.log("accountingId :>> ", accountingId);
+        console.log("itemFilter :>> ", itemFilter);
 
         if (itemFilter.length < 1) {
             setMsg("請確認輸入的編號為已經登記在項目表上的編號");
@@ -273,10 +271,7 @@ const Accounting = (props) => {
             </form>
             <Box>
                 <Title text={month + " 月記帳表"} />
-                <ReactTable
-                    data={accountingData}
-                    col={JSON.parse(localStorage.getItem("itemCol"))}
-                ></ReactTable>
+                <ReactTable data={accountingData} col={colList}></ReactTable>
                 <Box mb={5}>
                     <Typography variant="h3" textAlign={"right"}>
                         總金額：{accountingTotal}
