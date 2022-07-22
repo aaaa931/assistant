@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { json_get, json_post, json_put, json_del } = require("./json");
 const app = express();
-const port = 5000;
 app.use(cors());
 app.use(express.json());
 
@@ -132,6 +131,7 @@ app.post("/accounting", (req, res) => {
     console.log(`accounting post success`);
 });
 
-app.listen(port, () => {
+const server = app.listen(process.env.PORT || 5000, () => {
+    const port = server.address().port;
     console.log(`assistant server listening on port ${port}`);
 });
