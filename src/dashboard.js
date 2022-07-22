@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-// import theme, { Container, Btn } from "./component/theme";
+import React from "react";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -13,16 +12,7 @@ import {
 import { Bar, Pie } from "react-chartjs-2";
 import { Container, Typography, Box, Divider } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import {
-    fetchAccounting,
-    selectAccountingData,
-    selectAccountingId,
-    selectAccountingPrice,
-    selectAccountingTotal,
-    setAccountingId,
-    setAccountingPrice,
-    setAccountingTotal,
-} from "./accountingSlice";
+import { fetchAccounting, selectAccountingData } from "./accountingSlice";
 import { useEffect } from "react";
 import { fetchItem, selectItemData } from "./itemSlice";
 
@@ -37,28 +27,35 @@ ChartJS.register(
 );
 
 const Dashboard = (props) => {
-    const chartType = ["圓餅圖", "長條圖"];
     const month = new Date().toISOString().substring(0, 7);
-    // const data =
-    //     JSON.parse(localStorage.getItem("accountingData")) != ""
-    //         ? JSON.parse(localStorage.getItem("accountingData"))
-    //         : [
-    //               {
-    //                   accountingType: "暫無資料",
-    //                   accountingName: "暫無資料",
-    //                   accountingPrice: 1,
-    //               },
-    //           ];
-    const data = useSelector(selectAccountingData);
+    const accountingData = useSelector(selectAccountingData);
+    const noData = "暫無資料";
+    const data =
+        accountingData.length > 0
+            ? accountingData
+            : [
+                  {
+                      accountingId: noData,
+                      accountingName: noData,
+                      accountingPrice: "1",
+                  },
+              ];
     const itemData = useSelector(selectItemData);
     const dispatch = useDispatch();
     let dataMap = new Map();
-    let typeList;
+    console.log("data :>> ", data);
 
     data.map((acc) => {
         const id = acc.accountingId;
         const price = acc.accountingPrice;
-        const type = itemData.find((item) => item.itemId === id);
+        const type =
+            itemData.length > 0
+                ? itemData.find((item) => item.itemId === id).itemType
+                : noData;
+
+        if (acc.accountingId === noData) {
+            return dataMap.set(noData, parseInt(price));
+        }
         console.log("type :>> ", type);
 
         if (dataMap.get(type)) {
@@ -83,39 +80,19 @@ const Dashboard = (props) => {
         init();
     }, []);
 
-    useEffect(() => {
-        const init_type = async () => {
-            // fix typelist
+    const bar_opt = (type = "x") => {
+        return {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
+                },
+                title: {
+                    display: true,
+                    text: month + " 月長條圖",
+                },
+            },
         };
-
-        init_type();
-    }, [itemData]);
-
-    const bar_option = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: "top",
-            },
-            title: {
-                display: true,
-                text: month + " 月長條圖",
-            },
-        },
-    };
-
-    const bar_horizontal_option = {
-        indexAxis: "y",
-        responsive: true,
-        plugins: {
-            legend: {
-                position: "top",
-            },
-            title: {
-                display: true,
-                text: month + " 月長條圖",
-            },
-        },
     };
 
     const pie_option = {
@@ -175,7 +152,7 @@ const Dashboard = (props) => {
         "rgba(8, 255, 200, 1)",
     ];
 
-    const chart_data = {
+    const chartData = {
         labels,
         datasets: [
             {
@@ -189,11 +166,6 @@ const Dashboard = (props) => {
     };
 
     const ChartArea = (props) => (
-        // <section className="mb-5">
-        //     <h2 className="text-center">{props.title}</h2>
-        //     <hr />
-        //     {props.chart}
-        // </section>
         <Box>
             <Typography variant="h3" textAlign="center" mt={3}>
                 {props.title}
@@ -204,36 +176,18 @@ const Dashboard = (props) => {
     );
 
     return (
-        // <Container className="container my-5">
-        //     <ChartArea
-        //         title="圓餅圖"
-        //         chart={<Pie options={pie_option} data={chart_data} />}
-        //     ></ChartArea>
-        //     <ChartArea
-        //         title="縱向長條圖"
-        //         chart={<Bar options={bar_option} data={chart_data} />}
-        //     ></ChartArea>
-        //     <ChartArea
-        //         title="橫向長條圖"
-        //         chart={
-        //             <Bar options={bar_horizontal_option} data={chart_data} />
-        //         }
-        //     ></ChartArea>
-        // </Container>
         <Container>
             <ChartArea
                 title="圓餅圖"
-                chart={<Pie options={pie_option} data={chart_data} />}
+                chart={<Pie options={pie_option} data={chartData} />}
             ></ChartArea>
             <ChartArea
                 title="縱向長條圖"
-                chart={<Bar options={bar_option} data={chart_data} />}
+                chart={<Bar options={bar_opt} data={chartData} />}
             ></ChartArea>
             <ChartArea
                 title="橫向長條圖"
-                chart={
-                    <Bar options={bar_horizontal_option} data={chart_data} />
-                }
+                chart={<Bar options={() => bar_opt("y")} data={chartData} />}
             ></ChartArea>
         </Container>
     );

@@ -1,36 +1,10 @@
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 import React, { useState, useEffect } from "react";
 import { web_style } from "./component/btn";
 import Task from "./component/task";
-import theme, {
-    // Container,
-    // Input,
-    Label,
-    Section,
-    Btn,
-} from "./component/theme";
-import {
-    Box,
-    Button,
-    Container,
-    Grid,
-    Input,
-    Stack,
-    Typography,
-    TextField,
-} from "@mui/material";
-import axios from "axios";
+import { Box, Button, Container, Stack, TextField } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux/es/exports";
-import {
-    selectFilter,
-    selectNote,
-    setFilter,
-    setNote,
-    addNote,
-    putNote,
-    delNote,
-    fetchNote,
-} from "./noteSlice";
+import { selectFilter, selectNote, setFilter, fetchNote } from "./noteSlice";
 import api from "./api";
 
 const NoteInput = (props) => {
@@ -46,27 +20,9 @@ const NoteInput = (props) => {
     };
 
     return (
-        /*<form className="form row" onSubmit={handelSubmit}>
-            <section className="col-lg-2 col-12 ms-3">
-                <Label htmlFor="inputNote theme-text">輸入待辦事項：</Label>
-            </section>
-            <section className="col-lg-10 col-12 ms-3">
-                <Input
-                    id="inputNote"
-                    className="form-control"
-                    value={name}
-                    onChange={handleChange}
-                />
-            </section>
-        </form>*/
         <form onSubmit={handelSubmit}>
             <Box p={2}>
-                {/* <Label htmlFor="inputNote">輸入待辦事項：</Label> */}
-                {/* <Typography variant="h6" component="label" gutterBottom>
-                    輸入待辦事項：
-                </Typography> */}
                 <TextField
-                    // id="inputNote"
                     variant="filled"
                     label="輸入待辦事項："
                     value={name}
@@ -77,14 +33,7 @@ const NoteInput = (props) => {
         </form>
     );
 };
-/*
-const noteData = [
-    { id: 0, name: "test1", completed: true },
-    { id: 1, name: "test2", completed: true },
-    { id: 2, name: "test3", completed: true },
-];
-localStorage.setItem("noteData", JSON.stringify(noteData));
-*/
+
 const FilterBtn = (props) => {
     const filter = useSelector(selectFilter);
     const dispatch = useDispatch();
@@ -104,19 +53,6 @@ const FilterBtn = (props) => {
         >
             {props.name}
         </Button>
-        // <Btn
-        //     className="btn w-90-3 mx-lg-3 mx-1"
-        //     onClick={() => {
-        //         //props.setFilter(props.name);
-        //         async function setfilter() {
-        //             dispatch(setFilter(props.name));
-        //             await props.fetchData(filter);
-        //         }
-        //         setfilter();
-        //     }}
-        // >
-        //     {props.name}
-        // </Btn>
     );
 };
 
@@ -128,22 +64,12 @@ const filterType = {
 
 const filterName = Object.keys(filterType);
 
-const Edit = (props) => {
-    //const [note, setNote] = useState(props.data);
-    //const [note, setNote] = useState(null);
+const Note = (props) => {
     const note = useSelector(selectNote);
     const filter = useSelector(selectFilter);
     const dispatch = useDispatch();
-    //const [filter, setFilter] = useState("all");
 
     console.log("note :>> ", note);
-
-    /*async function fetchData() {
-        const result = await getNote(filter); //getNote();
-        console.log("result :>> ", result);
-        // setNote(result);
-        dispatch(setNote(result));
-    }*/
 
     const init = async () => {
         await dispatch(fetchNote(filter));
@@ -151,30 +77,12 @@ const Edit = (props) => {
     };
 
     useEffect(() => {
-        //fetchData();
-        // dispatch(fetchNote(filter));
-        // web_style();
         init();
     }, [filter]);
 
     useEffect(() => {
-        //fetchData();
-        // dispatch(fetchNote(filter));
-        // web_style();
         init();
     }, []);
-
-    // init
-    /*if (!note) {
-        const initNote = [
-            {
-                id: "note" + nanoid(),
-                name: "從這一筆資料開始",
-                completed: false,
-            },
-        ];
-        localStorage.setItem("noteData", JSON.stringify(initNote));
-    }*/
 
     async function addRow(name) {
         const newNote = {
@@ -182,10 +90,6 @@ const Edit = (props) => {
             status: "active",
         };
 
-        // await addNote(newNote);
-        // await fetchData();
-
-        // await dispatch(addNote(newNote));
         await api("record", "post", newNote);
         await dispatch(fetchNote());
     }
@@ -201,19 +105,11 @@ const Edit = (props) => {
             newNote = { ...newNote, status: "active" };
         }
 
-        // await putNote(newNote);
-        // await fetchData();
-
-        // await dispatch(putNote(newNote));
         await api("record", "put", newNote);
         await dispatch(fetchNote());
     }
 
     async function deleteNote(id) {
-        // await delNote(id);
-        // await fetchData();
-
-        // await dispatch(delNote(id));
         await api("record", "delete", id);
         await dispatch(fetchNote());
     }
@@ -225,22 +121,11 @@ const Edit = (props) => {
 
         newNote = { ...newNote, data: name };
 
-        // await putNote(newNote);
-        // await fetchData();
-
-        // await dispatch(putNote(newNote));
         await api("record", "put", newNote);
         await dispatch(fetchNote());
     }
 
     const filterList = filterName.map((name) => (
-        /*<FilterBtn
-            key={name}
-            name={name}
-            setFilter={setFilter}
-            fetchData={() => dispatch(fetchNote())}
-        />*/
-        // <Grid item xs={4}>
         <FilterBtn
             key={name}
             name={name}
@@ -248,12 +133,13 @@ const Edit = (props) => {
             fetchData={() => dispatch(fetchNote())}
             fullWidth
         />
-        // </Grid>
     ));
 
     const noteList = note
-        ? note.filter(filterType[filter.status]).map((note) => (
-              /*<Task
+        ? note
+              .filter(filterType[filter.status])
+              .map((note) => (
+                  <Task
                       id={note.id}
                       name={note.data}
                       completed={note.status == "completed" ? true : false}
@@ -261,19 +147,8 @@ const Edit = (props) => {
                       toggleCompleted={toggleCompleted}
                       deleteNote={deleteNote}
                       editNote={editNote}
-                  />*/
-              //   <Grid item xs={12} key={note.id}>
-              <Task
-                  id={note.id}
-                  name={note.data}
-                  completed={note.status == "completed" ? true : false}
-                  key={note.id}
-                  toggleCompleted={toggleCompleted}
-                  deleteNote={deleteNote}
-                  editNote={editNote}
-              />
-              //   </Grid>
-          ))
+                  />
+              ))
         : [];
 
     return (
@@ -285,20 +160,8 @@ const Edit = (props) => {
                 </Stack>
                 {noteList}
             </Stack>
-            {/* <Container className="container my-5">
-            <section className="row mb-5">
-                <NoteInput data={note} addRow={addRow} />
-            </section>
-            <section className="row mb-5">
-                <section className="d-flex justify-content-center ps-4 ps-lg-0">
-                    {filterList}
-                </section>
-            </section>
-            <section className="row mb-5">
-                <ul className="my-0 px-3 none-list">{noteList}</ul>
-            </section> */}
         </Container>
     );
 };
 
-export default Edit;
+export default Note;

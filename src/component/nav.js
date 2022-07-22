@@ -1,18 +1,14 @@
 // import { ThemeProvider } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
-import BtnSwitch from "./btn";
 import {
     createTheme,
-    useTheme,
     ThemeProvider,
     alpha,
     styled,
 } from "@mui/material/styles";
-// import theme, { NavContainer, Text, TextUrl } from "./theme";
 import { themeFn, getTheme } from "./theme";
 import {
-    Box,
     Button,
     Container,
     Stack,
@@ -21,32 +17,12 @@ import {
     Toolbar,
     IconButton,
     Menu,
-    Tooltip,
     MenuItem,
     Switch,
     CssBaseline,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-
-/*const NavBrand = () => (
-    <section className="navbar-brand ms-lg-5 ms-3">
-        <Link to={"/"} className="navbar-brand">
-            <TextUrl>個人數位助理</TextUrl>
-        </Link>
-    </section>
-);
-
-const NavToggler = () => (
-    <button
-        type="button"
-        className="navbar-toggler"
-        data-bs-toggle="collapse"
-        data-bs-target="#nav"
-    >
-        <Text className="bi bi-list"></Text>
-    </button>
-);*/
 
 const webList = {
     首頁: "",
@@ -232,30 +208,10 @@ const NavMenuList = (props) => {
     );
 };
 
-/*const NavList = (props) => {
-    const lists = Object.entries(webList).map(([webName, webUrl]) => (
-        <li className="nav-item" key={webName}>
-            <Link to={webUrl} className="nav-link">
-                <Text>{webName}</Text>
-            </Link>
-        </li>
-    ));
-
-    return (
-        <section className="collapse navbar-collapse" id="nav">
-            <ul className="navbar-nav ms-auto me-lg-5">{lists}</ul>
-            <BtnSwitch styleChange={props.styleChange} />
-        </section>
-    );
-};*/
-
 export default function Nav(props) {
     const [style, setStyle] = useState(localStorage.getItem("webStyle"));
 
     const styleChange = () => {
-        // console.log("style :>> ", style);
-        // setStyle(style);
-        // localStorage.setItem("webStyle", style);
         const themeBg = document.querySelectorAll(".theme-bg");
 
         if (style === "light") {
@@ -272,16 +228,6 @@ export default function Nav(props) {
     const theme = createTheme(getTheme(style));
 
     return (
-        /*<ThemeProvider theme={theme[style]}>
-            <NavContainer className="navbar navbar-expand-lg">
-                <section className="container-fluid">
-                    <NavBrand></NavBrand>
-                    <NavToggler></NavToggler>
-                    <NavList styleChange={styleChange}></NavList>
-                </section>
-            </NavContainer>
-            <Outlet />
-        </ThemeProvider>*/
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <AppBar>

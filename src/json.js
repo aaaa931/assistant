@@ -8,7 +8,6 @@ const json_get = (url, params = null, cb) => {
             return console.log("json_get error :>> ", error);
         }
 
-        // const data = dataList.length > 0 ? JSON.parse(dataList.toString()) : [];
         const data = dataList.length > 0 ? JSON.parse(dataList) : [];
         console.log("get data -> ", data);
         cb(data, params);
@@ -27,10 +26,6 @@ exports.json_post = (url, newData, cb) => {
             return console.log("json_post error :>> ", error);
         }
 
-        // let data = dataList.toString();
-        // data = JSON.parse(data);
-        // data.push(newData);
-        // data = JSON.stringify(data);
         let data = dataList.length > 0 ? JSON.parse(dataList) : [];
         const maxId = Math.max(...data.map((data) => data.id));
         const id = maxId < 0 ? 0 : maxId + 1;
