@@ -35,13 +35,12 @@ const Accounting = (props) => {
     const today = new Date().toISOString().substring(0, 10);
     // YYYY-MM
     const month = today.substring(0, 7);
+    const filter = {
+        accountingDate: month,
+    };
 
     useEffect(() => {
         async function init() {
-            const filter = {
-                accountingDate: month,
-            };
-
             await dispatch(fetchAccounting(filter));
             await dispatch(fetchItem());
         }
@@ -98,7 +97,7 @@ const Accounting = (props) => {
             setAccountingTotal(accountingTotal + parseInt(accountingPrice))
         );
         await api("accounting", "post", newData);
-        await dispatch(fetchAccounting(month));
+        await dispatch(fetchAccounting(filter));
     }
 
     const handleSubmit = (e) => {

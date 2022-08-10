@@ -46,17 +46,16 @@ const Dashboard = (props) => {
     console.log("data :>> ", data);
 
     data.map((acc) => {
+        if (acc.accountingId === noData) {
+            return dataMap.set(noData, 1);
+        }
+
         const id = acc.accountingId;
         const price = acc.accountingPrice;
         const type =
             itemData.length > 0
                 ? itemData.find((item) => item.itemId === id).itemType
                 : noData;
-
-        if (acc.accountingId === noData) {
-            return dataMap.set(noData, parseInt(price));
-        }
-        console.log("type :>> ", type);
 
         if (dataMap.get(type)) {
             return dataMap.set(type, dataMap.get(type) + parseInt(price));
