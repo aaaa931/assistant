@@ -11,8 +11,8 @@
 ## 檔案架構
 
 鑒於原本未採用 Redux，且頁面不多，故一開始設計時並未為每個頁面建立資料夾。
->component（通用 component）
->>|-- btn.js
+component（通用 component）
+   btn.js
 >>|-- form.js
 >>|-- nav.js
 >>|-- table.js
