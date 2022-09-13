@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+# 個人數位助理
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+使用說明：
+* 記事
+    * 在上方輸入待辦事項 Input 輸入後按下 Enter 即可紀錄，在列表中左方 Icon 為是否完成狀態，填滿代表已完成，反之則未完成，可透過編輯與刪除 Button 進行編輯刪除，刪除時不會進行確定動作，請留意。
+* 記帳
+    * 包含首頁、項目、記帳、紀錄頁面，首頁以 Chart.js 顯示出當月的記帳圖表，用於快速了解當月支出結構，記帳前需在項目登陸項目才能進行記帳，目的是快速記帳，記帳使用登陸項目時提供的編號進行登記，輸入編號與日期送出後即可記帳，紀錄可查看過往所有紀錄，以上三個頁面均有排序功能。
+使用技術：React、Redux、Material UI、Chart.js
+後端 API：Node.js 自架
 
-## Available Scripts
+## 檔案架構
 
-In the project directory, you can run:
+鑒於原本未採用 Redux，且頁面不多，故一開始設計時並未為每個頁面建立資料夾。
+>component（通用 component）
+>>|-- btn.js
+>>|-- form.js
+>>|-- nav.js
+>>|-- table.js
+>>|-- task.js
+>>|-- theme.js
 
-### `npm start`
+>頁面 component、頁面 slice
+>index.css
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 通用（index.js、api.js、init.js、store.js、component/btn.js、component/form.js、component/nav.js、component/table.js、component/theme.js）
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* index
+    * 根據對應 path 導向各頁面
+* api
+    * axios 接收 API 之設定，對 RESTful api 的四種方法進行初步設定
+* init
+    * 早期開發 view 時使用的假資料，現未使用
+* store
+    * 在 Redux 中註冊各個 slice
+* btn
+    * 早期用於切換模式時切換背景顏色，並根據 localStorage 在網站開啟時自動切換至上次使用的主題，現搬移至 theme.js 中
+* form
+    * 存放各種會運用在 form 的 component
+* nav
+    * 網站的 nav，根據裝置將 nav 收至 menu icon button 中，包含切換模式的 switch
+* table
+    * 存放 table component，擁有排序、分頁功能
+* theme
+    * 客製 MUI 主題設定檔，留有早期使用 Emotion styled component 的設定，現未使用 Emotion styled component
 
-### `npm test`
+### 首頁（dashboard.js）
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+圖表初始設定，接收 itemSlice、accountingSlice 變數，將 accountingSlice 接收 API 所獲得的項目編號、金額在 itemSlice API 獲得的項目類別組合，回傳給 Chart.js 產生出圖表
 
-### `npm run build`
+### 記事（note.js、noteSlice.js、component/task.js）
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* task
+    * 記事列表 component，根據 edit state 是否為 true 呈現編輯中的 view 或一般的 view
+* note
+    * 組合輸入待辦事項的 Input、Filter button 與 task component 呈現出的頁面，根據所需要的 state 使用 query params 進行查詢，僅返回所需要的資料
+* noteSlice
+    * 託管 note 頁面所使用的 state，部分 state 牽扯到個別顯示問題，故不在這
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 項目（item.js、itemSlice.js）
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* item
+    * 組合 form、table component 呈現出的頁面
+* itemSlice
+    * 同記事中的 noteSlice
 
-### `npm run eject`
+### 記帳（accounting.js、accountingSlice.js）
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* accounting
+    * 組合 form、table component 呈現出的頁面，根據所需要的 state 使用 query params 進行查詢，僅返回當月資料
+* accountingSlice
+    * 同記事中的 noteSlice
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 紀錄（record.js）
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* record
+    * 組合 form、table component 呈現出的頁面
