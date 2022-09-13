@@ -11,16 +11,17 @@
 ## 檔案架構
 
 鑒於原本未採用 Redux，且頁面不多，故一開始設計時並未為每個頁面建立資料夾。
+<pre>
 component（通用 component）
-   btn.js
->>|-- form.js
->>|-- nav.js
->>|-- table.js
->>|-- task.js
->>|-- theme.js
-
->頁面 component、頁面 slice
->index.css
+|-- btn.js
+|-- form.js
+|-- nav.js
+|-- table.js
+|-- task.js
+|-- theme.js
+頁面 component、頁面 slice
+index.css
+</pre>
 
 ### 通用（index.js、api.js、init.js、store.js、component/btn.js、component/form.js、component/nav.js、component/table.js、component/theme.js）
 
