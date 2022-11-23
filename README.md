@@ -5,22 +5,25 @@
     * 在上方輸入待辦事項 Input 輸入後按下 Enter 即可紀錄，在列表中左方 Icon 為是否完成狀態，填滿代表已完成，反之則未完成，可透過編輯與刪除 Button 進行編輯刪除，刪除時不會進行確定動作，請留意。
 * 記帳
     * 包含首頁、項目、記帳、紀錄頁面，首頁以 Chart.js 顯示出當月的記帳圖表，用於快速了解當月支出結構，記帳前需在項目登陸項目才能進行記帳，目的是快速記帳，記帳使用登陸項目時提供的編號進行登記，輸入編號與日期送出後即可記帳，紀錄可查看過往所有紀錄，以上三個頁面均有排序功能。
+<pre>
 使用技術：React、Redux、Material UI、Chart.js
 後端 API：Node.js 自架
+</pre>
 
 ## 檔案架構
 
 鑒於原本未採用 Redux，且頁面不多，故一開始設計時並未為每個頁面建立資料夾。
->component（通用 component）
->>|-- btn.js
->>|-- form.js
->>|-- nav.js
->>|-- table.js
->>|-- task.js
->>|-- theme.js
-
->頁面 component、頁面 slice
->index.css
+<pre>
+component（通用 component）
+|-- btn.js
+|-- form.js
+|-- nav.js
+|-- table.js
+|-- task.js
+|-- theme.js
+頁面 component、頁面 slice
+index.css
+</pre>
 
 ### 通用（index.js、api.js、init.js、store.js、component/btn.js、component/form.js、component/nav.js、component/table.js、component/theme.js）
 
