@@ -2,7 +2,7 @@ import axios from "axios";
 
 const instance = axios.create({
     // baseURL: "http://192.168.2.128:3000/api/",
-    baseURL: "https://react-assistant-api-01.herokuapp.com/",
+    baseURL: "https://assistant-api.onrender.com/",
     // baseURL: "http://localhost:5000/",
     timeout: 3000,
 });
